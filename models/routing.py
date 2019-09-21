@@ -177,7 +177,6 @@ def do_upload(id):
 	result=cur.fetchall()
 	saveFileName=werkzeug.utils.secure_filename(fileName)
 	list=os.listdir("sp-service/static/upload")
-#	return render_template("complite.html",message=list)
 	if saveFileName in list:
 		cur.close()
 		flash("FileName is already used.","alert alert-danger")
@@ -306,19 +305,3 @@ def after_request(response):
 	logger.info('end '+current_app.name+' :: httpStatusCode='+str(response._status_code)+',response='+str(response.response))
 	return  prepare_response(response)
 
-#def exception_handler(ex):
-#	logger=logging.create_logger(current_app)
-#
-#	logger.error(traceback.format_exc())
-#	if MODE=='DEBUG':
-#		return (render_template("error.html",error=traceback.format_exec()),HTTPStatus.INTERNAL_SERVER_ERROR)
-#	else:
-#		return (render_template("error.html"),HTTPStatus.INTERNAL_SERVER_ERROR)
-
-#def not_found_handler(ex):
-#	logger=logging.create_logger(current_app)
-#
-#	logger.info('Not Found '+request.url)
-#
-#	return (render_template("404.html"),HTTPStatus.NOT_FOUND)
-#
