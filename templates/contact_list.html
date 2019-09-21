@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Contact List</h1>
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cate, mess in messages %}
+<div class="{{ cate }}">{{mess}}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="container">
+<a href="/sp-service/sp-admin/contact/delete" class="btn btn-warning">Delete</a>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr><th>Number</th><th>Content</th><th>UserID</th></tr>
+</thead>
+<tbody>
+{% for content in contents %}
+<tr><td>{{content[0]}}</td><td>{{content[1]}}</td><td>{{content[2]}}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock %}

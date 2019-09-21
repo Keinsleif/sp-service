@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+{% block content %}
+<script type="text/javascript">
+$(function(){
+	// WebSocket作成
+	var ws = new WebSocket('ws://192.168.1.243:8500'+{{pre}});
+
+	// WebSocket open時のイベントハンドラ登録
+	ws.onopen = function(){
+		ws.send("{{user}}")
+	}
+
+	// WebSocket message受信時のイベントハンドラ登録
+	ws.onmessage = function(message){
+		$("#chat-text").prepend('<div class="panel panel-{{color}}"><div class="panel-heading">{{user}}</div><div class="panel-body">'+message.data + "</div></div><br/>");
+	}
+
+	// WebSocket error時のイベントハンドラ登録
+	ws.onerror = function(){
+		$("#chat-text").prepend('<div class="panel panel-{{color}}"><div class="panel-heading">{{user}}</div><div class="panel-body">error</div></div><br/>');
+	}
+
+	// WebSocket close時のイベントハンドラ登録
+	ws.onclose = function(){
+		$("#chat-text").prepend('<div class="panel panel-{{color}}"><div class="panel-heading">{{user}}</div><div class="panel-body">{{user}} is left</div></div><br/>');
+	}
+
+	// Windowが閉じられた(例：ブラウザを閉じた)時のイベントを設定
+	$(window).unload(function() {
+		ws.onclose(); // WebSocket close
+	})
+	
+
+})
+</script>
+<div class="panel panel-default">
+<div class="panel-heading">Post</div>
+<div class="panel-body">
+<form id="input-form">
+<div class="form-group">
+<input id="message" type="text" class="form-control" placeholder="Enter chat text here!" autofocus />
+</div>
+<button class="btn btn-primary" type="button" id="send" onclick="function(e){ws.send($("#message").val());}">Send</button>
+</form>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">Chat</div>
+<div class="panel-body" id="chat-text">
+</div>
+{% endblock %}

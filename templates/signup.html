@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Send Create User Request</h1>
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cate, mess in messages %}
+<div class="{{ cate }}">{{mess}}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<hr>
+
+<form action="/sp-service/sp-user/signup" method="post">
+<div class="form-group">
+<label for="InputNewName">New UserName(10)</label>
+<input type="text" class="form-control" id="InputNewName" name="newname">
+</div>
+<div class="form-group">
+<label for="InputNewHandle">New HandleName(10)</label>
+<input type="text" class="form-control" id="InputNewHandle" name="newhandle">
+</div>
+<div class="form-group">
+<label for="InputNewPassword">New Password</label>
+<input type="password" class="form-control" id="InputNewPassword" name="newpass">
+</div>
+<div class="form-group">
+<label for="InputColor">Select Color:</label>
+<br><input type="radio" name="color" value="success">Green</input>
+<input type="radio" name="color" value="info">Blue</input>
+<br><input type="radio" name="color" value="warning">Orange</input>
+<input type="radio" name="color" value="danger">Red</input>
+<br><input type="radio" name="color" value="secondary">Gray</input>
+<input type="radio" name="color" value="light">Light</input>
+<br><input type="radio" name="color" value="dark">Dark</input>
+</div>
+<input type="submit" class="btn btn-primary"></input>
+</form>
+{% endblock %}

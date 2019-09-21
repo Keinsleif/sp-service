@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cate, mess in messages %}
+<div class="{{ cate }}">{{mess}}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<form action="/sp-service/contact" method="POST">
+<div class="form-group">
+<label for="InputContact">Content:</label>
+<textarea name="contact" id="InputContact" class="form-control"></textarea>
+</div>
+<button type="submit" class="btn btn-primary">Send</button>
+</form>
+{% endblock %}

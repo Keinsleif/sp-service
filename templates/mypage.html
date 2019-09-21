@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>My Page</h1>
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cate, mess in messages %}
+<div class="{{ cate }}">{{mess}}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<h2>Index</h2>
+<a href="#data">User DATA</a><br>
+<a href="#file">Uploaded File</a><br>
+<hr>
+<h2 id="data">User DATA</h2>
+<table class="table table-striped table-bordered table-responsive">
+<thead class="thead-light">
+<tr><th>ID</th><th>NAME</th><th>HANDLE</th><th>COLOR</th></tr>
+</thead>
+<tr><td>{{data[0]}}</td><td>{{data[1]}}</td><td>{{data[2]}}</td><td>{{data[4]}}</td></tr>
+</table>
+<h2 id="file">Uploaded File</h2>
+<table class="table table-striped table-bordered table-responsive">
+<thead class="thead-light">
+<tr><th>ID</th><th>FILENAME</th><th>TIME</th><th>DOWNLOAD</th></tr>
+</thead>
+{% for file in files %}
+<tr><td>{{file[0]}}</td><td>{{file[1]}}</td><td>{{datetime.datetime.fromtimestamp(file[2])}}</td><td><a class="btn btn-primary" href="/sp-service/static/upload/{{file[1]}}" download="{{file[1]}}">DL</a></td></tr>
+{% endfor %}
+</table>
+{% endblock %}

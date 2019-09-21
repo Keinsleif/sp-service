@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cate, mess in messages %}
+<div class="{{ cate }}">{{mess}}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+{% endblock %}
