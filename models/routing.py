@@ -287,13 +287,13 @@ def do_contact_form(user_id):
 	cur.close()
 	return render_template("complite.html",title="Complite send")
 
-def show_chat(prefix,user_id):
+def show_chat(id):
 	db=db_util.get_db()
 	cur=db.cursor()
-	cur.execute("select * from sp_user where id=%s",(user_id,))
+	cur.execute("select * from sp_user where id=%s",(id,))
 	result=cur.fetchall()
 	cur.close()
-	return render_template('chat.html',title="Chat",pre=prefix,user=result[0][2],color=result[0][3])
+	return render_template('chat.html',title="Chat",user=result)
 
 
 def before_request():

@@ -118,6 +118,15 @@ def mypage():
 		if request.method=='GET':
 			return routing.show_mypage(result)
 
+@application.route("/sp-service/chat",methods=['GET'])
+def chat():
+	result=routing.check_login()
+	if result==False:
+		return redirect(url_for('login'))
+	else:
+		if request.method=='GET':
+			return routing.show_chat(result)
+
 
 #=====================Admin Page ==============================#
 
