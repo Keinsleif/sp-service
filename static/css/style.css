@@ -9,3 +9,8 @@ body {
 	height: 100%;
 }
 }
+
+#chat-text {
+  overflow: auto;
+  height: 500px;
+}

@@ -20,7 +20,8 @@ def prepare_response(response):
 	if 'set_cookie' not in di:
 		response=make_response(response)
 	response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-	response.headers['Content-Security-Policy'] = 'default-src \'self\''
+	response.headers['Content-Security-Policy'] = 'default-src \'self\' wss:;'
+	response.headers['Content-Security-Policy'] = 'script-src mypcnotes.mydns.jp \'nonce-ZWMyNjQ3YzMyNDI5ODI5MWQ0ODE1NjlkY2UxODAzODc2ZGUzYWQ2OA\''
 	response.headers['X-Content-Type-Options'] = 'nosniff'
 	response.headers['X-Frame-Options'] = 'SAMEORIGIN'
 	response.headers['X-XSS-Protection'] = '1; mode=block'

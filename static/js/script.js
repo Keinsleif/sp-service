@@ -1,5 +1,5 @@
-date = new Date();
-thisYear = date.getFullYear();
-document.getElementById("thisYear").innerHTML = thisYear;
+//date = new Date();
+//thisYear = date.getFullYear();
+//document.getElementById("thisYear").innerHTML = thisYear;
 
 

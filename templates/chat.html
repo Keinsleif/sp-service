@@ -1,18 +1,17 @@
 {% extends 'layout-chat.html' %}
 {% block content %}
-<div class="card card-default">
-<div class="card-heading">Post</div>
-<div class="card-body">
-<form id="input-form">
+<div class="page-header">
+<h2>Post</h2>
+</div>
+<form id="input-form" class="form-inline">
 <div class="form-group">
-<input id="message" type="text" class="form-control" placeholder="Enter chat text here!" autofocus />
+<input id="input-text" type="text" class="form-control" placeholder="Enter chat text here!" autofocus />
 </div>
-<button class="btn btn-primary" type="button" id="send" onclick="function(e){ws.send($("#message").val());}">Send</button>
+<button class="btn btn-primary" type="submit">Send</button>
 </form>
+<div class="page-header">
+<h2>Chat</h2>
 </div>
-</div>
-<div class="card card-default">
-<div class="card-heading">Chat</div>
-<div class="card-body" id="chat-text">
+<div id="chat-text">
 </div>
 {% endblock %}

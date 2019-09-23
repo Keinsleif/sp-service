@@ -34,10 +34,7 @@ def chat_handle(environ, start_response):
 
 def myapp(environ, start_response):
 	path = environ['PATH_INFO']
-	if path == '/':
-		start_response('301 Moved', [('Location', 'https://mypcnotes.mydns.jp/sp-service/chat')])
-		return ''
-	elif path == '/chat':
+	if path == '/chat':
 		return chat_handle(environ, start_response)
 	else:
 		start_response('404 Not Found.', [('Content-Type', 'text/plain')])
@@ -45,6 +42,6 @@ def myapp(environ, start_response):
 
 
 if __name__ == '__main__':
-	server = pywsgi.WSGIServer(('127.0.0.1', 9250), myapp, handler_class=WebSocketHandler)
+	server = pywsgi.WSGIServer(('192.168.1.243', 9250), myapp, handler_class=WebSocketHandler)
 	print("Starting Gevent Websocket Server.")
 	server.serve_forever()
