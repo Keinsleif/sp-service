@@ -120,7 +120,14 @@ def do_signup():
 	if result==[] or float(result[0][1])-time()<=43200:
 		newname=request.form['newname']
 		newhandle=request.form['newhandle']
-		newpass=generate_password_hash(request.form['newpass']).decode('utf-8')
+		inewpass=request.form['newpass']
+		rinewpass=request.form['retypenewpass']
+		if inewpass==rinewpass:
+			newpass=generate_password_hash(inewpass).decode('utf-8')
+		else:
+			cur.close()
+			flash("Passwords don't match!","alert alert-danger")
+			return redirect(url_for('sighup'))
 		color=request.form['color']
 		cur.execute("select * from sp_user where name=%s",(newname,))
 		nbol=cur.fetchall()
