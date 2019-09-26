@@ -54,10 +54,10 @@ def check_login():
 
 
 def show_home():
-	return render_template('home.html',title="HomePage")
+	return render_template('home.html',title="メインページ")
 
 def show_login():
-	return render_template('login.html',title="Login",error="")
+	return render_template('login.html',title="ログイン",error="")
 
 def do_login():
 	db=db_util.get_db()
@@ -68,7 +68,7 @@ def do_login():
 	result=cur.fetchall()
 	if result==[]:
 		cur.close()
-		flash("Invalid UserName.","alert alert-danger")
+		flash("ユーザーネームが違います","alert alert-danger")
 		return  render_template('login.html',title="Login",)
 	elif check_password_hash(result[0][3],passwd):
 		cur.execute("delete from sp_session where user_id=%s;",(result[0][0],))
@@ -82,7 +82,7 @@ def do_login():
 		return response
 	else:
 		cur.close()
-		flash("Invalid Password.","alert alert-danger")
+		flash("パスワードが違います","alert alert-danger")
 		return render_template('login.html',title="Login",)
 
 def show_logout(userid):
@@ -92,10 +92,10 @@ def show_logout(userid):
 	result=cur.fetchall()
 	cur.close()
 	if result==[]:
-		return render_template('logout.html',title="Logout",user=userid)
+		return render_template('logout.html',title="ログアウト",user=userid)
 	else:
 		user=result[0]
-		return render_template('logout.html',title="Logout",user=result[0][0])
+		return render_template('logout.html',title="ログアウト",user=result[0][0])
 
 def do_logout(userid):
 	db=db_util.get_db()
@@ -108,7 +108,7 @@ def do_logout(userid):
 	return response
 
 def show_signup():
-	return render_template('signup.html',title="Signup")
+	return render_template('signup.html',title="新規登録")
 
 def do_signup():
 	#logger=logging.create_logger(current_app)
@@ -126,7 +126,7 @@ def do_signup():
 			newpass=generate_password_hash(inewpass).decode('utf-8')
 		else:
 			cur.close()
-			flash("Passwords don't match!","alert alert-danger")
+			flash("パスワードが一致しません","alert alert-danger")
 			return redirect(url_for('signup'))
 		color=request.form['color']
 		cur.execute("select * from sp_user where name=%s",(newname,))
@@ -137,32 +137,32 @@ def do_signup():
 		pbol=cur.fetchall()
 		error=""
 		if not nbol==[]:
-			error="UserName already in use."
+			error="そのユーザーネームは既に使用されています"
 		elif len(newname)>10:
-			error="UserName is TOO LONG!"
+			error="ユーザーネームが長過ぎます"
 		elif len(newname)<2:
-			error="UserName is TOO SHORT!"
+			error="ユーザーネームが短すぎます"
 		elif not hbol==[]:
-			error="HandleName already in use."
+			error="そのハンドルネームは既に使用されています。"
 		elif len(newhandle)>10:
-			error="HandleName is TOO LONG!"
+			error="ハンドルネームが長過ぎます"
 		elif len(newhandle)<2:
-			error="HandleName is TOO SHORT!"
+			error="ハンドルネームが短すぎます"
 		elif not pbol==[]:
-			error="Password alrady in use."
+			error="そのパスワードは既に使用されています。"
 		elif len(newpass)<8:
-			error="You must input longer password."
+			error="もっと長いパスワードを入力してください"
 		if error=="":
 			cur.execute("select * from sp_user;")
 			id_in=len(cur.fetchall())+1
 			cur.execute("insert into sp_user values (%s,%s,%s,%s,%s,%s)",(id_in,newname,newhandle,newpass,color,"tmp"))
 			db.commit()
 			cur.close()
-			return render_template('complite.html',title="Complite signup",message="Request is sended!")
+			return render_template('complite.html',title="登録完了",message="登録が完了しました")
 		else:
 			cur.close()
 			flash(error,"alert alert-danger")
-			return render_template('signup.html',title="Signup",error=error)
+			return render_template('signup.html',title="新規登録",error=error)
 	else:
 		cur.close()
 		return render_template('ip_wait.html',title="Warning")
@@ -172,12 +172,12 @@ def show_upload():
 
 def do_upload(id):
 	if 'uploadFile' not in request.files:
-		flash("You must choose file!","alert alert-danger")
+		flash("ファイルを選択してください","alert alert-danger")
 		return redirect(url_for('upload'))
 	file=request.files['uploadFile']
 	fileName=file.filename
 	if ''==fileName:
-		flash("FileName must not empty.","alert alert-danger")
+		flash("ファイルネームをセットしてください","alert alert-danger")
 		return redirect(url_for('upload'))
 	db=db_util.get_db()
 	cur=db.cursor()
@@ -187,13 +187,13 @@ def do_upload(id):
 	list=os.listdir("sp-service/static/upload")
 	if saveFileName in list:
 		cur.close()
-		flash("FileName is already used.","alert alert-danger")
+		flash("そのファイル名は既に使われています。","alert alert-danger")
 		return redirect(url_for('upload'))
 	cur.execute("insert into sp_file values (%s,%s,%s,%s)",(len(result),saveFileName,time(),id,))
 	db.commit()
 	file.save(os.path.join(UPLOAD_DIR, saveFileName))
 	cur.close()
-	return render_template('complite.html',title="File is Uploaded!",message="File is Uploaded!")
+	return render_template('complite.html',title="アップロード完了",message="ファイルは正常にアップロードされました")
 
 def show_mypage(id):
 	db=db_util.get_db()
@@ -202,7 +202,7 @@ def show_mypage(id):
 	result=cur.fetchall()
 	cur.execute("select * from sp_file where user_id=%s",(id,))
 	files=cur.fetchall()
-	return render_template('mypage.html',title="MyPage",data=result[0],files=files,datetime=datetime)
+	return render_template('mypage.html',title="Myページ",data=result[0],files=files,datetime=datetime)
 
 def show_threads():
 	db=db_util.get_db()
@@ -210,10 +210,10 @@ def show_threads():
 	cur.execute("select * from sp_board_thread")
 	result=cur.fetchall()
 	cur.close()
-	return render_template('show_threads.html',title="Listing of Threads.",threads=result)
+	return render_template('show_threads.html',title="スレッドリスト",threads=result)
 
 def show_new_thread():
-	return render_template('new_threads.html',title="Create New Thread",tname="")
+	return render_template('new_threads.html',title="スレッドを作成",tname="")
 
 def do_new_thread(id):
 	db=db_util.get_db()
@@ -224,7 +224,7 @@ def do_new_thread(id):
 		cur.execute('select * from sp_board_thread where name=%s',(tname,))
 		result=cur.fetchall()
 		if not result==[]:
-			flash("ThreadName is already used!","alert alert-danger")
+			flash("そのスレッドの名前は既に使われています","alert alert-danger")
 			cur.close()
 			return redirect(url_for("create_thread"))
 		elif tdesc=="":
@@ -235,7 +235,7 @@ def do_new_thread(id):
 			cur.execute("insert into sp_board_thread values (%s,%s,%s,%s)",(len(result),tname,tdesc,id,))
 			db.commit()
 			cur.close()
-			flash("Thread is successful created.","alert alert-success")
+			flash("スレッドは正常に作成されました","alert alert-success")
 			return redirect(url_for("threads"))
 
 def show_board(id,thread):
@@ -244,7 +244,7 @@ def show_board(id,thread):
 	cur.execute("select * from sp_board_thread where name=%s",(thread,))
 	result=cur.fetchall()
 	if result==[]:
-		flash("Thread Not Fount","alert alert-warning")
+		flash("スレッドが見つかりません","alert alert-warning")
 		cur.close()
 		return redirect(url_for("threads"))
 	else:
@@ -264,7 +264,7 @@ def do_post_to_board(id,thread):
 	pmess=request.form['pmess']
 	pip=request.remote_addr
 	if ptitle=="" or pmess=="":
-		flash("Post Title is Required!","alert alert-danger")
+		flash("タイトルが必要です","alert alert-danger")
 		cur.close()
 		return redirect(url_for("board_render"))
 	else:
@@ -284,7 +284,7 @@ def show_contact_form():
 def do_contact_form(user_id):
 	contact=request.form['contact']
 	if not contact:
-		flash("Content is must not empty.","alert alert-danger")
+		flash("何か入力してください","alert alert-danger")
 		return redirect(url_for("contact"))
 	db=db_util.get_db()
 	cur=db.cursor()
@@ -293,7 +293,7 @@ def do_contact_form(user_id):
 	cur.execute("insert into sp_contact values(%s,%s,%s);",(str(len(result)+1),contact,user_id,))
 	db.commit()
 	cur.close()
-	return render_template("complite.html",title="Complite send")
+	return render_template("complite.html",title="リクエストは正常に送信されました")
 
 def show_chat(id):
 	db=db_util.get_db()
@@ -303,7 +303,7 @@ def show_chat(id):
 	with open('sp-service/static/chat/chat.txt','r') as f:
 		mess=f.read()
 	cur.close()
-	return render_template('chat.html',title="Chat",user=result,mess=mess)
+	return render_template('chat.html',title="チャット",user=result,mess=mess)
 
 
 def before_request():
