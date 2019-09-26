@@ -78,7 +78,7 @@ def do_login():
 		db.commit()
 		cur.close()
 		response=make_response(redirect(url_for('index')))
-		response.set_cookie('session',value=sessid,secure=None,httponly=True)
+		response.set_cookie('session',value=sessid,secure=True,httponly=True)
 		return response
 	else:
 		cur.close()
@@ -127,7 +127,7 @@ def do_signup():
 		else:
 			cur.close()
 			flash("Passwords don't match!","alert alert-danger")
-			return redirect(url_for('sighup'))
+			return redirect(url_for('signup'))
 		color=request.form['color']
 		cur.execute("select * from sp_user where name=%s",(newname,))
 		nbol=cur.fetchall()
@@ -300,8 +300,10 @@ def show_chat(id):
 	cur=db.cursor()
 	cur.execute("select * from sp_user where id=%s",(id,))
 	result=cur.fetchall()
+	with open('sp-service/static/chat/chat.txt','r') as f:
+		mess=f.read()
 	cur.close()
-	return render_template('chat.html',title="Chat",user=result)
+	return render_template('chat.html',title="Chat",user=result,mess=mess)
 
 
 def before_request():

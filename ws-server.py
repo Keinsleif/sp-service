@@ -3,6 +3,7 @@
 
 from geventwebsocket.handler import WebSocketHandler
 from gevent import pywsgi
+import mysql.connector
 
 
 ws_list = set()
@@ -28,6 +29,12 @@ def chat_handle(environ, start_response):
 		for s in remove:
 			ws_list.remove(s)
 
+		with open("/var/www/html/sp-service/static/chat/chat.txt",'r+') as f:
+			d=f.read()
+			f.seek(0)
+			f.write(msg+"\n"+d)
+
+
 	print('exit:', environ['REMOTE_ADDR'], environ['REMOTE_PORT'])
 	ws_list.remove(ws)
 
@@ -42,6 +49,6 @@ def myapp(environ, start_response):
 
 
 if __name__ == '__main__':
-	server = pywsgi.WSGIServer(('192.168.1.243', 9250), myapp, handler_class=WebSocketHandler)
+	server = pywsgi.WSGIServer(('127.0.0.1', 9250), myapp, handler_class=WebSocketHandler)
 	print("Starting Gevent Websocket Server.")
 	server.serve_forever()
