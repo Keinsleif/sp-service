@@ -255,7 +255,7 @@ def show_board(id,thread):
 			cur.execute("select * from sp_user where id=%s",(result[i][6],))
 			l4=cur.fetchall()
 			posts.append(result[i]+l4[0])
-		return render_template('board.html',title=thread,posts=posts,datetime=datetime)
+		return render_template('board.html',title="Board - "+thread,posts=posts,datetime=datetime)
 
 def do_post_to_board(id,thread):
 	db=db_util.get_db()
