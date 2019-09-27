@@ -1,16 +1,16 @@
 {% extends 'layout-chat.html' %}
 {% block content %}
 <div class="page-header">
-<h2>Post</h2>
+<h2>投稿</h2>
 </div>
 <form id="input-form" class="form-inline">
 <div class="form-group">
-<input id="input-text" type="text" class="form-control" placeholder="Enter chat text here!" autofocus />
+<input id="input-text" type="text" class="form-control" placeholder="ここにテキストを入力" autofocus />
 </div>
-<button class="btn btn-primary" type="submit">Send</button>
+<button id="send-btn" class="btn btn-primary" type="submit" disabled="disabled">送信</button>
 </form>
 <div class="page-header">
-<h2>Chat</h2>
+<h2>チャット</h2>
 </div>
 <div id="chat-text">
 {{mess|safe}}

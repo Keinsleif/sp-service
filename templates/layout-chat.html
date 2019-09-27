@@ -51,19 +51,32 @@ var url = scheme + "mypcnotes.mydns.jp/chat";
 var ws = new WebSocket(url);
 
 ws.onopen = function(){
-        ws.send('<div class="alert alert-secondary">'+escapeHtml('{{user[0][2]}}')+' が参加しました。</div>');
+	var obj = new Object();
+	obj.message=escapeHtml('{{user[0][2]}}　が参加しました');
+	obj.writer='system';
+	obj.color='secondary';
+	var jsonString = JSON.stringify(obj);
+	ws.send(jsonString);
 };
 
 ws.onmessage = function(message){
-        $("#chat-text").prepend(message.data);
+	var wsRes = $.parseJSON(message.data);
+        $("#chat-text").prepend('<div class="alert alert-'+wsRes.color+'">'+wsRes.writer+': '+wsRes.message+'</div>');
 };
 
 ws.onerror = function(){
         $("#chat-text").prepend('<div class="alert alert-danger">エラーが発生しました。</div>');
 };
 
+$("#send-btn").prop("disabled", false);
+
 ws.onclose = function(){
-	ws.send('<div class="alert alert-{{user[0][4]}}">'+escapeHtml('{{user[0][2]}}')+' が退出しました。</div>');
+	var obj = new Object();
+	obj.message=escapeHtml('{{user[0][2]}}　が退出しました');
+	obj.writer='system';
+	obj.color='secondary';
+	var jsonString = JSON.stringify(obj);
+	ws.send(jsonString);
 };
 
 $(window).on('unload', function() {
@@ -72,8 +85,12 @@ $(window).on('unload', function() {
 
 $("#input-form").on("submit",function(event) {
 	event.preventDefault();
-	var text = $("#input-text")[0].value;
-	ws.send('<div class="alert alert-{{user[0][4]}}">'+escapeHtml('{{user[0][2]}}')+': '+escapeHtml(text)+'</div>');
+	var obj = new Object();
+	obj.message=$("#input-text")[0].value;
+	obj.writer='{{user[0][2]}}';
+	obj.color='{{user[0][4]}}';
+	var jsonString = JSON.stringify(obj);
+	ws.send(jsonString);
 	$("#input-text")[0].value = "";
 });
 

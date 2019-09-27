@@ -3,7 +3,8 @@
 
 from geventwebsocket.handler import WebSocketHandler
 from gevent import pywsgi
-import mysql.connector
+import json
+import html
 
 
 ws_list = set()
@@ -15,14 +16,16 @@ def chat_handle(environ, start_response):
 	print('enter:', len(ws_list), environ['REMOTE_ADDR'], environ['REMOTE_PORT'])
 
 	while True:
-		msg = ws.receive()
-		if msg is None:
+		msg = json.loads(ws.receive())
+		if msg["message"] is None:
 			break
+
+		msg={"message": html.escape(msg["message"]),"writer": msg["writer"],"color": msg["color"],}
 
 		remove = set()
 		for s in ws_list:
 			try:
-				s.send(msg)
+				s.send(json.dumps(msg))
 			except Exception:
 				remove.add(s)
 
@@ -32,7 +35,7 @@ def chat_handle(environ, start_response):
 		with open("/var/www/html/sp-service/static/chat/chat.txt",'r+') as f:
 			d=f.read()
 			f.seek(0)
-			f.write(msg+"\n"+d)
+			f.write('<div class="alert alert-'+msg["color"]+'">'+msg["writer"]+': '+msg["message"]+"</div>\n"+d)
 
 
 	print('exit:', environ['REMOTE_ADDR'], environ['REMOTE_PORT'])

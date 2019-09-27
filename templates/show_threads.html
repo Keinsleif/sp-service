@@ -8,13 +8,13 @@
 {% endfor %}
 {% endif %}
 {% endwith %}
-<h1>Threads</h1>
+<h1>スレッド</h1>
 <hr>
-<a href="/sp-service/threads/new" class="btn btn-info">New</a>
+<a href="/sp-service/threads/new" class="btn btn-info">新規作成</a>
 <div class="table-responsive">
 <table class="table table-striped table-bordered">
 <thead>
-<tr><th>ID</th><th>Name</th><th>Description</th><th>Auther</th><th></th></tr>
+<tr><th>ID</th><th>スレッド名</th><th>説明</th><th>作成者</th><th></th></tr>
 </thead>
 <tbody>
 {% for thread in threads %}

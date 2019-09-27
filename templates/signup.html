@@ -12,30 +12,30 @@
 
 <form action="/sp-service/sp-user/signup" method="post">
 <div class="form-group">
-<label for="InputNewName">New UserName(10)</label>
+<label for="InputNewName">新規ユーザー名(10)</label>
 <input type="text" class="form-control" id="InputNewName" name="newname">
 </div>
 <div class="form-group">
-<label for="InputNewHandle">New HandleName(10)</label>
+<label for="InputNewHandle">新規ハンドル名(10)</label>
 <input type="text" class="form-control" id="InputNewHandle" name="newhandle">
 </div>
 <div class="form-group">
-<label for="InputNewPassword">New Password</label>
+<label for="InputNewPassword">パスワード</label>
 <input type="password" class="form-control" id="InputNewPassword" name="newpass">
 </div>
 <div class="form-group">
-<label for="RetypeNewPassword">Retype New Password</label>
+<label for="RetypeNewPassword">もう一度パスワードを入力</label>
 <input type="password" class="form-control" id="RetypeNewPassword" name="retypenewpass">
 </div>
 <div class="form-group">
-<label for="InputColor">Select Color:</label>
-<br><input type="radio" name="color" value="success">Green</input>
-<input type="radio" name="color" value="info">Blue</input>
-<br><input type="radio" name="color" value="warning">Orange</input>
-<input type="radio" name="color" value="danger">Red</input>
-<br><input type="radio" name="color" value="light">Light</input>
-<input type="radio" name="color" value="dark">Dark</input>
+<label for="InputColor">枠の色:</label>
+<br><input type="radio" name="color" value="success">緑</input>
+<input type="radio" name="color" value="info">青</input>
+<br><input type="radio" name="color" value="warning">オレンジ</input>
+<input type="radio" name="color" value="danger">赤</input>
+<br><input type="radio" name="color" value="light">白</input>
+<input type="radio" name="color" value="dark">黒</input>
 </div>
-<input type="submit" class="btn btn-primary"></input>
+<input type="submit" class="btn btn-primary">送信</input>
 </form>
 {% endblock %}

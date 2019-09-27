@@ -12,23 +12,25 @@
 <hr>
 <form action="/sp-service/thread/{{title}}" method="post">
 <div class="form-group">
-<label for="InputPostTitle">Post Title(50)</label>
+<label for="InputPostTitle">コメントタイトル(50)</label>
 <input type="text" class="form-control" id="InputPostTitle" name="ptitle">
 </div>
 <div class="form-group">
-<label for="InputPostMess">Post Message</label>
+<label for="InputPostMess">コメント</label>
 <textarea name="pmess" id="InputPostMess" class="form-control"></textarea>
 </div>
 <input type="submit" class="btn btn-primary"></input>
 </form>
 <hr>
 {% for post in posts %}
-<div class="card border-{{post[11]}} text-{{post[11]}}">
+<div id="#{{post[0]}}" class="card border-{{post[11]}} text-{{post[11]}}">
 <div class="card-header">{{post[0]}}<div class="text-right">{{datetime.datetime.fromtimestamp(post[1])}}</div></div>
 <div class="card-body">
 <h5 class="card-title">{{post[2]}}</h5>
 <hr>
+<pre>
 <p class="card-text">{{post[3]}}</p>
+</pre>
 </div>
 <div class="card-footer"><div class="text-right">{{post[8]}}</div></div>
 </div>

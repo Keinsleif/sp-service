@@ -10,13 +10,13 @@
 {% endwith %}
 <form action="/sp-service/threads/new" method="post">
 <div class="form-group">
-<label for="InputNewName">New Thread Name(20)</label>
+<label for="InputNewName">新規スレッド名(20)</label>
 <input type="text" class="form-control" id="InputNewName" name="newtname" value="{{tname}}">
 </div>
 <div class="form-group">
-<label for="InputNewDesc">New Thread Description</label>
+<label for="InputNewDesc">スレッドの説明</label>
 <textarea name="newtdesc" id="InputNewDesc" class="form-control"></textarea>
 </div>
-<button type="submit" class="btn btn-primary">Send</button>
+<button type="submit" class="btn btn-primary">作成</button>
 </form>
 {% endblock %}

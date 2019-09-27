@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
 {% block content %}
-<h1>Logout</h1>
+<h1>ログアウト</h1>
 <hr>
-<h3>NowLogin: {{ user }}</h3>
+<h3>ログイン中: {{ user }}</h3>
 
 <form action="/sp-service/sp-user/logout" method="post">
-<button type="submit" class="btn btn-primary">Logout</button>
+<button type="submit" class="btn btn-primary">ログアウト</button>
 </form>
 {% endblock %}

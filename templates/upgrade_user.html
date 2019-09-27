@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% block content %}
-<h1>Select Upgrade User</h1>
+<h1>アップグレードするユーザーを選択</h1>
 {% with messages=get_flashed_messages(with_categories=true) %}
 {% if messages %}
 {% for cate, mess in messages %}
@@ -9,12 +9,12 @@
 {% endif %}
 {% endwith %}
 <div class="container">
-<a href="/sp-service/sp-admin/user/list" class="btn btn-info">Back to UserList</a>
+<a href="/sp-service/sp-admin/user/list" class="btn btn-info">ユーザーリストに戻る</a>
 <form action="/sp-service/sp-admin/user/upgrade" method="post">
 <div class="table-responsive">
 <table class="table table-striped table-bordered">
 <thead>
-<tr><th>Number</th><th>Name</th><th>Handle</th><th>PassHash</th><th>Color</th><th>Type</th><th>Upgrade</th></tr>
+<tr><th>番号</th><th>ユーザー名</th><th>ハンドル名</th><th>パスワードソルト</th><th>色</th><th>タイプ</th><th>アップグレード</th></tr>
 </thead>
 <tbody>
 {% for user in users %}
@@ -23,7 +23,7 @@
 </tbody>
 </table>
 </div>
-<button type="submit" class="btn btn-primary">Upgrade</button>
+<button type="submit" class="btn btn-primary">アップグレード</button>
 </form>
 </div>
 {% endblock %}
