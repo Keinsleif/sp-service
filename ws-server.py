@@ -5,15 +5,16 @@ from geventwebsocket.handler import WebSocketHandler
 from gevent import pywsgi
 import json
 import html
+from logging import getLogger
 
-
+logger=getLogger(__name__)
 ws_list = set()
 
 def chat_handle(environ, start_response):
 	ws = environ['wsgi.websocket']
 	ws_list.add(ws)
 
-	print('enter:', len(ws_list), environ['REMOTE_ADDR'], environ['REMOTE_PORT'])
+	logger.info('enter:', len(ws_list), environ['REMOTE_ADDR'], environ['REMOTE_PORT'])
 
 	while True:
 		msg = json.loads(ws.receive())
@@ -38,7 +39,7 @@ def chat_handle(environ, start_response):
 			f.write('<div class="alert alert-'+msg["color"]+'">'+msg["writer"]+': '+msg["message"]+"</div>\n"+d)
 
 
-	print('exit:', environ['REMOTE_ADDR'], environ['REMOTE_PORT'])
+	logger.info('exit:', environ['REMOTE_ADDR'], environ['REMOTE_PORT'])
 	ws_list.remove(ws)
 
 

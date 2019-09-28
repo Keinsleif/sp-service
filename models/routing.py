@@ -40,7 +40,7 @@ def check_login():
 		db.commit()
 		cur.close()
 		return False
-	if float(result[0][1])-time() >= 604800000:
+	if float(result[0][1])-int(time()) >= 604800:
 		cur.execute("delete from sp_session where sess_id=%s;",(cook,))
 		db.commit()
 		cur.close()
@@ -74,7 +74,7 @@ def do_login():
 		cur.execute("delete from sp_session where user_id=%s;",(result[0][0],))
 		db.commit()
 		sessid=token_hex(4)
-		cur.execute("insert into sp_session values (%s,%s,%s);",(sessid,time(),result[0][0]))
+		cur.execute("insert into sp_session values (%s,%s,%s);",(sessid,int(time()),result[0][0]))
 		db.commit()
 		cur.close()
 		response=make_response(redirect(url_for('index')))
@@ -255,7 +255,7 @@ def show_board(id,thread):
 			cur.execute("select * from sp_user where id=%s",(result[i][6],))
 			l4=cur.fetchall()
 			posts.append(result[i]+l4[0])
-		return render_template('board.html',title="Board - "+thread,posts=posts,datetime=datetime)
+		return render_template('board.html',title=thread,posts=posts,datetime=datetime)
 
 def do_post_to_board(id,thread):
 	db=db_util.get_db()
@@ -272,7 +272,7 @@ def do_post_to_board(id,thread):
 		r1=cur.fetchall()
 		cur.execute("select * from sp_board_post")
 		result=cur.fetchall()
-		cur.execute("insert into sp_board_post values (%s,%s,%s,%s,%s,%s,%s)",(len(result)+1,time(),ptitle,pmess,r1[0][0],pip,id))
+		cur.execute("insert into sp_board_post values (%s,%s,%s,%s,%s,%s,%s)",(len(result)+1,time(),ptitle,pmess,r1[0][0],pip,id,))
 		db.commit()
 		cur.close()
 		return redirect("/sp-service/thread/"+thread)

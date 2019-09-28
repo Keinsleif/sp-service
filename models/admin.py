@@ -55,7 +55,7 @@ def show_edit_user(uname):
 def do_edit_user():
 	db=db_util.get_db()
 	cur=db.cursor()
-	
+
 
 def show_contact():
 	db=db_util.get_db()

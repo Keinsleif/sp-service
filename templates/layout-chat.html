@@ -57,6 +57,7 @@ ws.onopen = function(){
 	obj.color='secondary';
 	var jsonString = JSON.stringify(obj);
 	ws.send(jsonString);
+	$("#send-btn").prop("disabled", false);
 };
 
 ws.onmessage = function(message){
@@ -67,8 +68,6 @@ ws.onmessage = function(message){
 ws.onerror = function(){
         $("#chat-text").prepend('<div class="alert alert-danger">エラーが発生しました。</div>');
 };
-
-$("#send-btn").prop("disabled", false);
 
 ws.onclose = function(){
 	var obj = new Object();
