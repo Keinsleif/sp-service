@@ -47,7 +47,7 @@
 <script src="/sp-service/static/js/script.js"></script>
 <script nonce="ZWMyNjQ3YzMyNDI5ODI5MWQ0ODE1NjlkY2UxODAzODc2ZGUzYWQ2OA">
 var scheme = "wss://";
-var url = scheme + "mypcnotes.mydns.jp/chat";
+var url = scheme + "mypcnotes.mydns.jp/chat"+'{{path}}';
 var ws = new WebSocket(url);
 
 ws.onopen = function(){

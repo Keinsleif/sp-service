@@ -5,19 +5,29 @@ from geventwebsocket.handler import WebSocketHandler
 from gevent import pywsgi
 import json
 import html
-from logging import getLogger
+import logging
+import re
+import os
 
-logger=getLogger(__name__)
+LOG_LEVEL_FILE = 'DEBUG'
+LOG_LEVEL_CONSOLE = 'INFO'
+
+logging.basicConfig(filename='/var/log/ws-server/main.log',level=logging.INFO)
+logger=logging.getLogger(__name__)
 ws_list = set()
+patt1=re.compile('/chat/(.*)')
 
-def chat_handle(environ, start_response):
+def chat_handle(environ, start_response, room):
 	ws = environ['wsgi.websocket']
 	ws_list.add(ws)
 
 	logger.info('enter:', len(ws_list), environ['REMOTE_ADDR'], environ['REMOTE_PORT'])
 
 	while True:
-		msg = json.loads(ws.receive())
+		msg=ws.recive()
+		if msg is None:
+			break
+		msg = json.loads()
 		if msg["message"] is None:
 			break
 
@@ -33,7 +43,7 @@ def chat_handle(environ, start_response):
 		for s in remove:
 			ws_list.remove(s)
 
-		with open("/var/www/html/sp-service/static/chat/chat.txt",'r+') as f:
+		with open("/var/www/html/sp-service/static/chat/"+room+".txt",'r+') as f:
 			d=f.read()
 			f.seek(0)
 			f.write('<div class="alert alert-'+msg["color"]+'">'+msg["writer"]+': '+msg["message"]+"</div>\n"+d)
@@ -45,8 +55,13 @@ def chat_handle(environ, start_response):
 
 def myapp(environ, start_response):
 	path = environ['PATH_INFO']
+	logger.info('start:'+path)
 	if path == '/chat':
-		return chat_handle(environ, start_response)
+		return chat_handle(environ, start_response,room="chat")
+	d=patt1.findall(path)
+	logger.info('d='+d[0])
+	if 	os.path.exists('/var/www/html/sp-service/static/chat/'+d[0]+'.txt'):
+		return chat_handle(environ, start_response,room=d[0])
 	else:
 		start_response('404 Not Found.', [('Content-Type', 'text/plain')])
 		return 'not found'
@@ -54,5 +69,5 @@ def myapp(environ, start_response):
 
 if __name__ == '__main__':
 	server = pywsgi.WSGIServer(('127.0.0.1', 9250), myapp, handler_class=WebSocketHandler)
-	print("Starting Gevent Websocket Server.")
+	logger.info("Starting Gevent Websocket Server.")
 	server.serve_forever()

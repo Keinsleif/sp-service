@@ -5,3 +5,4 @@ create table sp_board_post(id int(8) not null primary key,time decimal(17,7) not
 create table sp_contact(id int(8) not null primary key,content text not null,user_id int(8) not null,foreign key (user_id) references sp_user(id) on delete cascade on update cascade);
 create table sp_ip (addr char(16) not null unique,time int unsigned not null);
 create table sp_file(id int(8) not null primary key,filename varchar(32) not null,time decimal(17,7) not null,user_id int(8) not null,foreign key fk_up_id(user_id) references sp_user(id) on delete cascade on update cascade);
+create table sp_chat_room(id int(8) not null primary key,name varchar(20) not null,des text,auther_id int(8) not null,index th_index(auther_id), foreign key (auther_id) references sp_user(id) on delete cascade on update cascade);

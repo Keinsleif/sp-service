@@ -127,6 +127,35 @@ def chat():
 		if request.method=='GET':
 			return routing.show_chat(result)
 
+@application.route('/sp-service/chat/rooms',methods=['GET'])
+def rooms():
+	result=routing.check_login()
+	if result==False:
+		return redirect(url_for('login'))
+	else:
+		if request.method=='GET':
+			return routing.show_rooms()
+
+@application.route('/sp-service/chat/rooms/new',methods=['GET','POST'])
+def create_room():
+	result=routing.check_login()
+	if result==False:
+		return redirect(url_for('login'))
+	else:
+		if request.method=='GET':
+			return routing.show_new_room()
+		elif request.method=='POST':
+			return routing.do_new_room(result)
+
+@application.route("/sp-service/chat/room/<string:room>",methods=['GET','POST'])
+def room_render(room):
+	result=routing.check_login()
+	if result==False:
+		return redirect(url_for('login'))
+	else:
+		if request.method=='GET':
+			return routing.show_room(result,room)
+
 @application.route("/sp-service/ip",methods=['GET'])
 def ip():
 	return routing.show_ip()

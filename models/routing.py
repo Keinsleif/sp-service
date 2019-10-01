@@ -316,7 +316,63 @@ def show_chat(id):
 	with open('sp-service/static/chat/chat.txt','r') as f:
 		mess=f.read()
 	cur.close()
-	return render_template('chat.html',title="チャット",user=result,mess=mess)
+	return render_template('chat.html',title="チャット",user=result,mess=mess,path="")
+
+def show_rooms():
+	db=db_util.get_db()
+	cur=db.cursor()
+	cur.execute("select * from sp_chat_room")
+	result=cur.fetchall()
+	cur.close()
+	return render_template('chat-room.html',title="ルームリスト",rooms=result)
+
+def show_new_room():
+	return render_template('new-room.html',title="ルームを作成",tname="")
+
+def do_new_room(id):
+	db=db_util.get_db()
+	cur=db.cursor()
+	rname=request.form['newtname']
+	rdesc=request.form['newtdesc']
+	if rname:
+		cur.execute('select * from sp_chat_room where name=%s',(rname,))
+		result=cur.fetchall()
+		if not result==[]:
+			flash("そのルームの名前は既に使われています","alert alert-danger")
+			cur.close()
+			return redirect(url_for("create_room"))
+		elif rdesc=="":
+			rdesc="No Description."
+		if result==[]:
+			cur.execute("select * from sp_board_thread")
+			result=cur.fetchall()
+			cur.execute("insert into sp_chat_room values (%s,%s,%s,%s)",(len(result),rname,rdesc,id,))
+			db.commit()
+			cur.close()
+			with open("sp-service/static/chat/"+rname+'.txt','w') as f:
+				pass
+			flash("ルームは正常に作成されました","alert alert-success")
+			return redirect(url_for("rooms"))
+
+def show_room(id,room):
+	db=db_util.get_db()
+	cur=db.cursor()
+	cur.execute("select * from sp_chat_room where name=%s",(room,))
+	result=cur.fetchall()
+	if result==[]:
+		flash("ルームが見つかりません","alert alert-warning")
+		cur.close()
+		return redirect(url_for("rooms"))
+	else:
+		try:
+			with open('sp-service/static/chat/'+str(result[0][0])+'.txt','r') as f:
+				mess=f.read()
+		except:
+			with open('sp-service/static/chat/'+str(result[0][0])+'.txt','w+') as f:
+				mess=""
+		cur.execute("select * from sp_user where id=%s",(id,))
+		user=cur.fetchall()
+		return render_template('chat.html',title=room,mess=mess,user=user,path='/'+str(result[0][0]))
 
 def show_ip():
 	return request.remote_addr
