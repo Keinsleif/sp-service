@@ -12,8 +12,14 @@ from time import time
 import datetime
 import re
 import os
+import html
+import yaml
 
-UPLOAD_DIR="sp-service/static/upload"
+with open("sp-service/config/env.conf","r") as f:
+	data=yaml.load(f)
+for i in data:
+	exec(i+"='"+data[i]+"'")
+patt1=re.compile('(@link:\\((.*?)\\):@)')
 
 def prepare_response(response):
 	di=dir(response)
@@ -117,7 +123,7 @@ def do_signup():
 	ip_addr=request.remote_addr
 	cur.execute("select * from sp_ip where addr=%s",(ip_addr,))
 	result=cur.fetchall()
-	if result==[] or float(result[0][1])-time()<=43200:
+	if result==[] or result[0][1]-int(time())<=43200:
 		newname=request.form['newname']
 		newhandle=request.form['newhandle']
 		inewpass=request.form['newpass']
@@ -156,6 +162,7 @@ def do_signup():
 			cur.execute("select * from sp_user;")
 			id_in=len(cur.fetchall())+1
 			cur.execute("insert into sp_user values (%s,%s,%s,%s,%s,%s)",(id_in,newname,newhandle,newpass,color,"tmp"))
+			cur.execute("insert into sp_ip values (%s,%s)",(request.remote_addr,int(time())))
 			db.commit()
 			cur.close()
 			return render_template('complite.html',title="登録完了",message="登録が完了しました")
@@ -268,6 +275,11 @@ def do_post_to_board(id,thread):
 		cur.close()
 		return redirect(url_for("board_render"))
 	else:
+		pmess=html.escape(pmess)
+		d=patt1.findall(pmess)
+		for i in d:
+			pmess=re.sub(re.sub('\)','\)',re.sub('\(','\(',i[0])),linktag.format(url=html.escape(i[1])),pmess)
+		pmess=re.sub('\n','<br>',pmess)
 		cur.execute("select * from sp_board_thread where name=%s",(thread,))
 		r1=cur.fetchall()
 		cur.execute("select * from sp_board_post")
@@ -295,6 +307,7 @@ def do_contact_form(user_id):
 	cur.close()
 	return render_template("complite.html",title="リクエストは正常に送信されました")
 
+
 def show_chat(id):
 	db=db_util.get_db()
 	cur=db.cursor()
@@ -304,6 +317,9 @@ def show_chat(id):
 		mess=f.read()
 	cur.close()
 	return render_template('chat.html',title="チャット",user=result,mess=mess)
+
+def show_ip():
+	return request.remote_addr
 
 
 def before_request():

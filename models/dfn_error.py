@@ -4,8 +4,12 @@
 from flask import request, g, current_app, logging, render_template
 import traceback
 from http import HTTPStatus
+import yaml
 
-MODE="DEBUG"
+with open("sp-service/config/env.conf","r") as f:
+        data=yaml.load(f)
+for i in data:
+        exec(i+"='"+data[i]+"'")
 
 def exception_handler(ex):
 	logger=logging.create_logger(current_app)

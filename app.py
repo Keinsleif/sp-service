@@ -127,6 +127,10 @@ def chat():
 		if request.method=='GET':
 			return routing.show_chat(result)
 
+@application.route("/sp-service/ip",methods=['GET'])
+def ip():
+	return routing.show_ip()
+
 
 #=====================Admin Page ==============================#
 

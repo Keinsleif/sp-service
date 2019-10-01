@@ -58,6 +58,7 @@ ws.onopen = function(){
 	var jsonString = JSON.stringify(obj);
 	ws.send(jsonString);
 	$("#send-btn").prop("disabled", false);
+	$("#bay-btn").prop("disabled", false);
 };
 
 ws.onmessage = function(message){
@@ -91,6 +92,34 @@ $("#input-form").on("submit",function(event) {
 	var jsonString = JSON.stringify(obj);
 	ws.send(jsonString);
 	$("#input-text")[0].value = "";
+});
+
+$("#bay-btn").on("click",function(event) {
+	event.preventDefault();
+	var obj = new Object();
+	obj.message='{{user[0][2]}} が離席しました';
+	obj.writer='system';
+	obj.color='secondary';
+	var jsonString = JSON.stringify(obj);
+	ws.send(jsonString);
+	$("#input-text")[0].value = "";
+	$("#send-btn").prop("disabled", "disabled");
+	$("#bay-btn").prop("disabled", "disabled");
+	$("#re-btn").prop("disabled", false);
+});
+
+$("#re-btn").on("click",function(event) {
+	event.preventDefault();
+	var obj = new Object();
+	obj.message='{{user[0][2]}} が再開しました';
+	obj.writer='system';
+	obj.color='secondary';
+	var jsonString = JSON.stringify(obj);
+	ws.send(jsonString);
+	$("#input-text")[0].value = "";
+	$("#send-btn").prop("disabled", false);
+	$("#bay-btn").prop("disabled", false);
+	$("#re-btn").prop("disabled", "disabled");
 });
 
 </script>
