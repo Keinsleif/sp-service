@@ -24,10 +24,10 @@ def chat_handle(environ, start_response, room):
 	logger.info('enter:', len(ws_list), environ['REMOTE_ADDR'], environ['REMOTE_PORT'])
 
 	while True:
-		msg=ws.recive()
+		msg=ws.receive()
 		if msg is None:
 			break
-		msg = json.loads()
+		msg = json.loads(msg)
 		if msg["message"] is None:
 			break
 
