@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cate, mess in messages %}
+<div class="{{ cate }}">{{mess}}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<form action="/sp-service/chat/rooms/new" method="post">
+<div class="form-group">
+<label for="InputNewName">新規ルーム名(20)</label>
+<input type="text" class="form-control" id="InputNewName" name="newtname" value="{{tname}}">
+</div>
+<div class="form-group">
+<label for="InputNewDesc">ルームの説明</label>
+<textarea name="newtdesc" id="InputNewDesc" class="form-control"></textarea>
+</div>
+<button type="submit" class="btn btn-primary">作成</button>
+</form>
+{% endblock %}

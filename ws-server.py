@@ -12,7 +12,6 @@ import os
 LOG_LEVEL_FILE = 'DEBUG'
 LOG_LEVEL_CONSOLE = 'INFO'
 
-logging.basicConfig(filename='/var/log/ws-server/main.log',level=logging.INFO)
 logger=logging.getLogger(__name__)
 ws_list = set()
 patt1=re.compile('/chat/(.*)')
