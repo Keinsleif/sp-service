@@ -13,9 +13,7 @@ application=Flask(__name__)
 application.secret_key='e221ea3d6e97b9a3'
 application.config['MAX_CONTENT_LENGTH']=1073741824
 
-logger=application.logger
-logger.setLevel(logging.INFO)
-
+dfn_error.init_app(application)
 db_util.init_app(application)
 
 
@@ -161,6 +159,15 @@ def ip():
 	return routing.show_ip()
 
 
+#=====================Static Files=============================#
+
+@application.route("/sp-service/static/upload/<string:file>",methods=['GET'])
+def download_upload_file(file):
+	result=routing.check_login()
+	if result==False:
+		return redirect(url_for('login'))
+	else:
+		return routing.download_file(file)
 #=====================Admin Page ==============================#
 
 

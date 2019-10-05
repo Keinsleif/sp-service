@@ -1,7 +1,7 @@
 #!/var/www/venv/bin/python
 # -*- coding: utf-8 -*-
 
-from flask import request, current_app, logging, render_template, redirect, url_for, make_response, flash
+from flask import request, current_app, logging, render_template, redirect, url_for, make_response, flash, send_from_directory
 from flask_bcrypt import check_password_hash, generate_password_hash
 import traceback
 import werkzeug
@@ -120,7 +120,10 @@ def do_signup():
 	#logger=logging.create_logger(current_app)
 	db=db_util.get_db()
 	cur=db.cursor()
-	ip_addr=request.remote_addr
+	if 'X-Forwarded-For' in request.headers:
+		ip_addr=request.headers.getlist("X-Forwarded-For")[0]
+	else:
+		ip_addr=request.remote_ip
 	cur.execute("select * from sp_ip where addr=%s",(ip_addr,))
 	result=cur.fetchall()
 	if result==[] or result[0][1]-int(time())<=43200:
@@ -162,7 +165,11 @@ def do_signup():
 			cur.execute("select * from sp_user;")
 			id_in=len(cur.fetchall())+1
 			cur.execute("insert into sp_user values (%s,%s,%s,%s,%s,%s)",(id_in,newname,newhandle,newpass,color,"tmp"))
-			cur.execute("insert into sp_ip values (%s,%s)",(request.remote_addr,int(time())))
+			if 'X-Forwarded-For' in request.headers:
+				ip=request.headers.getlist("X-Forwarded-For")[0]
+			else:
+				ip=request.remote_addr
+			cur.execute("insert into sp_ip values (%s,%s)",(ip,int(time())))
 			db.commit()
 			cur.close()
 			return render_template('complite.html',title="登録完了",message="登録が完了しました")
@@ -184,21 +191,21 @@ def do_upload(id):
 	file=request.files['uploadFile']
 	fileName=file.filename
 	if ''==fileName:
-		flash("ファイルネームをセットしてください","alert alert-danger")
+		flash("ファイルを選択してください","alert alert-danger")
 		return redirect(url_for('upload'))
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_file")
 	result=cur.fetchall()
-	saveFileName=werkzeug.utils.secure_filename(fileName)
-	list=os.listdir("sp-service/static/upload")
-	if saveFileName in list:
-		cur.close()
-		flash("そのファイル名は既に使われています。","alert alert-danger")
-		return redirect(url_for('upload'))
-	cur.execute("insert into sp_file values (%s,%s,%s,%s)",(len(result),saveFileName,time(),id,))
+	cur.execute("select * from sp_file where tfilename=%s",(fileName,))
+	re18=cur.fetchall()
+	if not re18==[]:
+		fileName=fileName+'.1'
+	saveFileName=token_hex(16)+".png"
+	cur.execute("insert into sp_file values (%s,%s,%s,%s,%s)",(len(result),saveFileName,fileName,time(),id,))
 	db.commit()
 	file.save(os.path.join(UPLOAD_DIR, saveFileName))
+	os.chmod(os.path.join(UPLOAD_DIR,saveFileName),0o644)
 	cur.close()
 	return render_template('complite.html',title="アップロード完了",message="ファイルは正常にアップロードされました")
 
@@ -206,10 +213,10 @@ def show_mypage(id):
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_user where id=%s",(id,))
-	result=cur.fetchall()
+	udata=cur.fetchall()
 	cur.execute("select * from sp_file where user_id=%s",(id,))
 	files=cur.fetchall()
-	return render_template('mypage.html',title="Myページ",data=result[0],files=files,datetime=datetime)
+	return render_template('mypage.html',title="Myページ",data=udata[0],files=files,datetime=datetime,UPLOAD_DIR=UPLOAD_DIR)
 
 def show_threads():
 	db=db_util.get_db()
@@ -269,7 +276,10 @@ def do_post_to_board(id,thread):
 	cur=db.cursor()
 	ptitle=request.form['ptitle']
 	pmess=request.form['pmess']
-	pip=request.remote_addr
+	if 'X-Forwarded-For' in request.headers:
+		pip=request.headers.getlist("X-Forwarded-For")[0]
+	else:
+		pip=request.remote_addr
 	if ptitle=="" or pmess=="":
 		flash("タイトルが必要です","alert alert-danger")
 		cur.close()
@@ -375,15 +385,21 @@ def show_room(id,room):
 		return render_template('chat.html',title=room,mess=mess,user=user,path='/'+str(result[0][0]))
 
 def show_ip():
-	return request.remote_addr
+	if 'X-Forwarded-For' in request.headers:
+		ip=request.headers.getlist("X-Forwarded-For")[0]
+	else:
+		ip="not"
+	return ip
 
+def download_file(file):
+	return send_from_directory(UPLOAD_DIR,file)
 
 def before_request():
 	logger=logging.create_logger(current_app)
-	logger.info('start '+current_app.name+' :: '+str(request.json))
+	logger.info('start '+current_app.name+' :: '+str(request.json)+str(request.headers))
 
 def after_request(response):
 	logger=logging.create_logger(current_app)
-	logger.info('end '+current_app.name+' :: httpStatusCode='+str(response._status_code)+',response='+str(response.response))
+	logger.info('end '+current_app.name+' :: httpStatusCode='+str(response._status_code)+',response=')
 	return  prepare_response(response)
 

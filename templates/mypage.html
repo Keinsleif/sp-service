@@ -25,7 +25,7 @@
 <tr><th>ID</th><th>ファイル名</th><th>時間</th><th>ダウンロード</th></tr>
 </thead>
 {% for file in files %}
-<tr><td>{{file[0]}}</td><td>{{file[1]}}</td><td>{{datetime.datetime.fromtimestamp(file[2])}}</td><td><a class="btn btn-primary" href="/sp-service/static/upload/{{file[1]}}" download="{{file[1]}}">DL</a></td></tr>
+<tr><td>{{file[0]}}</td><td>{{file[2]}}</td><td>{{datetime.datetime.fromtimestamp(file[3])}}</td><td><a class="btn btn-primary" href="/{{UPLOAD_DIR}}{{file[1]}}" download="{{file[2]}}">DL</a></td></tr>
 {% endfor %}
 </table>
 {% endblock %}
