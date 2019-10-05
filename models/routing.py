@@ -36,7 +36,7 @@ def prepare_response(response):
 def check_login():
 	cook=request.cookies.get('session',None)
 	if cook==None:
-		return False
+		return [False,request.path]
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute('select * from sp_session where sess_id=%s;',(cook,))
@@ -45,18 +45,18 @@ def check_login():
 		cur.execute("delete from sp_session where sess_id=%s;",(cook,))
 		db.commit()
 		cur.close()
-		return False
+		return [False,request.path]
 	if float(result[0][1])-int(time()) >= 604800:
 		cur.execute("delete from sp_session where sess_id=%s;",(cook,))
 		db.commit()
 		cur.close()
-		return False
+		return [False,request.path]
 	elif result[0][2]==None:
 		cur.close()
 		return 0
 	else:
 		cur.close()
-		return result[0][2]
+		return [True,result[0][2]]
 
 
 def show_home():
@@ -65,7 +65,7 @@ def show_home():
 def show_login():
 	return render_template('login.html',title="ログイン",error="")
 
-def do_login():
+def do_login(next):
 	db=db_util.get_db()
 	cur=db.cursor()
 	user=request.form['userName']
@@ -83,7 +83,7 @@ def do_login():
 		cur.execute("insert into sp_session values (%s,%s,%s);",(sessid,int(time()),result[0][0]))
 		db.commit()
 		cur.close()
-		response=make_response(redirect(url_for('index')))
+		response=make_response(redirect(next))
 		response.set_cookie('session',value=sessid,secure=True,httponly=True)
 		return response
 	else:
