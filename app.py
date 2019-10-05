@@ -26,9 +26,9 @@ def index():
 		return routing.show_home()
 
 @application.route('/sp-service/sp-user/login', methods=['GET','POST'])
-def login(next="/sp-service"):
+def login():
 	if request.method=='POST':
-		return routing.do_login(next)
+		return routing.do_login()
 	elif request.method=='GET':
 		return routing.show_login()
 
@@ -149,6 +149,16 @@ def room_render(room):
 	else:
 		if request.method=='GET':
 			return routing.show_room(result[1],room)
+
+@application.route("/sp-service/sp-user/mypage/file-del",methods=['POST'])
+def del_file():
+	result=routing.check_login()
+	if result[0]==False:
+		return redirect(url_for('login',next=result[1]))
+	else:
+		if request.method=='POST':
+			return routing.do_del_file()
+
 
 @application.route("/sp-service/ip",methods=['GET'])
 def ip():

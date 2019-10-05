@@ -3,8 +3,6 @@
 
 from flask import request, current_app, logging, render_template, redirect, url_for, make_response, flash, send_from_directory
 from flask_bcrypt import check_password_hash, generate_password_hash
-import traceback
-import werkzeug
 from http import HTTPStatus
 from models import db_util
 from secrets import token_hex
@@ -34,7 +32,7 @@ def prepare_response(response):
 	return response
 
 def check_login():
-	cook=request.cookies.get('session',None)
+	cook=request.cookies.get('sp-session',None)
 	if cook==None:
 		return [False,request.path]
 	db=db_util.get_db()
@@ -63,13 +61,15 @@ def show_home():
 	return render_template('home.html',title="メインページ")
 
 def show_login():
-	return render_template('login.html',title="ログイン",error="")
+	path=request.args.get('next','/sp-service')
+	return render_template('login.html',title="ログイン",error="",reqpath=path)
 
-def do_login(next):
+def do_login():
 	db=db_util.get_db()
 	cur=db.cursor()
 	user=request.form['userName']
 	passwd=request.form['password']
+	next_path=request.form['path']
 	cur.execute("select * from sp_user where name=%s;",(user,))
 	result=cur.fetchall()
 	if result==[]:
@@ -83,8 +83,8 @@ def do_login(next):
 		cur.execute("insert into sp_session values (%s,%s,%s);",(sessid,int(time()),result[0][0]))
 		db.commit()
 		cur.close()
-		response=make_response(redirect(next))
-		response.set_cookie('session',value=sessid,secure=True,httponly=True)
+		response=make_response(redirect(next_path))
+		response.set_cookie('sp-session',value=sessid,secure=True,httponly=True)
 		return response
 	else:
 		cur.close()
@@ -107,7 +107,7 @@ def do_logout(userid):
 	db=db_util.get_db()
 	cur=db.cursor()
 	response=make_response(redirect(url_for('login')))
-	response.set_cookie("session","")
+	response.set_cookie("sp-session","")
 	cur.execute("delete from sp_session where user_id=%s;",(userid,))
 	db.commit()
 	cur.close()
@@ -383,6 +383,23 @@ def show_room(id,room):
 		cur.execute("select * from sp_user where id=%s",(id,))
 		user=cur.fetchall()
 		return render_template('chat.html',title=room,mess=mess,user=user,path='/'+str(result[0][0]))
+
+def do_del_file():
+	db=db_util.get_db()
+	cur=db.cursor()
+	file_id=request.form['delfile']
+	cur.execute("select * from sp_file where id=%s",(file_id,))
+	result=cur.fetchall()
+	if not result==[]:
+		cur.execute("delete from sp_file where id=%s",(file_id,))
+		db.commit()
+		os.remove(UPLOAD_DIR+result[0][1])
+		flash("ファイルは正常に削除されました","alert alert-success")
+		cur.close()
+		return redirect(url_for('mypage'))
+	cur.close()
+	flash("選択されたファイルは存在しません","alert alert-danger")
+	return redirect(url_for('mypage'))
 
 def show_ip():
 	if 'X-Forwarded-For' in request.headers:

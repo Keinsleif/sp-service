@@ -22,10 +22,12 @@
 <h2 id="file">アップロードされたファイル</h2>
 <table class="table table-striped table-bordered table-responsive">
 <thead class="thead-light">
-<tr><th>ID</th><th>ファイル名</th><th>時間</th><th>ダウンロード</th></tr>
+<tr><th>ID</th><th>ファイル名</th><th>時間</th><th>ダウンロード</th><th>削除</th></tr>
 </thead>
+<form action="/sp-service/sp-user/mypage/file-del" method="post">
 {% for file in files %}
-<tr><td>{{file[0]}}</td><td>{{file[2]}}</td><td>{{datetime.datetime.fromtimestamp(file[3])}}</td><td><a class="btn btn-primary" href="/{{UPLOAD_DIR}}{{file[1]}}" download="{{file[2]}}">DL</a></td></tr>
+<tr><td>{{file[0]}}</td><td>{{file[2]}}</td><td>{{datetime.datetime.fromtimestamp(file[3])}}</td><td><a class="btn btn-primary" href="/{{UPLOAD_DIR}}{{file[1]}}" download="{{file[2]}}">DL</a></td><td><button class="btn btn-primary" type="submit" name="delfile" value="{{file[0]}}">削除</a></td></tr>
 {% endfor %}
+</form>
 </table>
 {% endblock %}
