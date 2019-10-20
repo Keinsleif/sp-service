@@ -174,6 +174,7 @@ def download_upload_file(file):
 		return redirect(url_for('login',next=result[1]))
 	else:
 		return routing.download_file(file)
+
 #=====================Admin Page ==============================#
 
 

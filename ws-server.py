@@ -8,6 +8,7 @@ import html
 import logging
 import re
 import os
+import sys
 
 LOG_LEVEL_FILE = 'DEBUG'
 LOG_LEVEL_CONSOLE = 'INFO'
@@ -21,7 +22,7 @@ def chat_handle(environ, start_response, room):
 	ws_list.add(ws)
 
 	logger.info('enter:', len(ws_list), environ['REMOTE_ADDR'], environ['REMOTE_PORT'])
-
+	logger.info(dir(environ))
 	while True:
 		msg=ws.receive()
 		if msg is None:

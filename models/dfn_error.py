@@ -23,14 +23,14 @@ def exception_handler(ex):
 def not_found_handler(ex):
 	logger=logging.create_logger(current_app)
 
-	logger.info('Not Found '+request.url)
+	logger.error('Not Found '+request.url)
 
 	return (render_template("404.html"),HTTPStatus.NOT_FOUND)
 
 def over_max_file_size_handler(error):
 	logger=logging.create_logger(current_app)
 
-	logger.info('file size is overed. '+request.url)
+	logger.error('file size is overed. '+request.url)
 
 	return(render_template("size_over.html",title="File Size is Over!"))
 
@@ -39,7 +39,7 @@ def init_app(app,log_dir='/var/log/sp-service'):
 	from logging.handlers import RotatingFileHandler
 	formatter=logging.Formatter(
 		'%(asctime)s %(levelname)s: %(message)s '
-		'[in %(pathname)s:%(lineno)d]'
+		'[in %(pathname)s:%(lineno)d]\n'
 	)
 	debug_log = '/var/log/sp-service/main.log'
 	debug_file_handler = RotatingFileHandler(
@@ -50,7 +50,7 @@ def init_app(app,log_dir='/var/log/sp-service'):
 	debug_file_handler.setFormatter(formatter)
 	app.logger.addHandler(debug_file_handler)
 
-	error_log = '/var/log/sp-service/main.log'
+	error_log = '/var/log/sp-service/error.log'
 	error_file_handler = RotatingFileHandler(
 		error_log, maxBytes=100000, backupCount=10
 	)

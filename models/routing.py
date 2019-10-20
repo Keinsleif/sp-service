@@ -25,7 +25,7 @@ def prepare_response(response):
 		response=make_response(response)
 	response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
 	response.headers['Content-Security-Policy'] = 'default-src \'self\' wss:;'
-	response.headers['Content-Security-Policy'] = 'script-src mypcnotes.mydns.jp \'nonce-ZWMyNjQ3YzMyNDI5ODI5MWQ0ODE1NjlkY2UxODAzODc2ZGUzYWQ2OA\''
+	response.headers['Content-Security-Policy'] = 'script-src mypcnotes.mydns.jp googletagmanager.com \'nonce-ZWMyNjQ3YzMyNDI5ODI5MWQ0ODE1NjlkY2UxODAzODc2ZGUzYWQ2OA\''
 	response.headers['X-Content-Type-Options'] = 'nosniff'
 	response.headers['X-Frame-Options'] = 'SAMEORIGIN'
 	response.headers['X-XSS-Protection'] = '1; mode=block'
@@ -65,11 +65,15 @@ def show_login():
 	return render_template('login.html',title="ログイン",error="",reqpath=path)
 
 def do_login():
+	user=request.form.get('userName')
+	passwd=request.form.get('password')
+	next_path=request.form.get('path')
+	if user==None or password==None or next_path==None:
+		flash("項目を入力してください","alert alert-danger")
+		cur.close()
+		return redirect(url_for('login'))
 	db=db_util.get_db()
 	cur=db.cursor()
-	user=request.form['userName']
-	passwd=request.form['password']
-	next_path=request.form['path']
 	cur.execute("select * from sp_user where name=%s;",(user,))
 	result=cur.fetchall()
 	if result==[]:
@@ -117,7 +121,6 @@ def show_signup():
 	return render_template('signup.html',title="新規登録")
 
 def do_signup():
-	#logger=logging.create_logger(current_app)
 	db=db_util.get_db()
 	cur=db.cursor()
 	if 'X-Forwarded-For' in request.headers:
@@ -127,17 +130,25 @@ def do_signup():
 	cur.execute("select * from sp_ip where addr=%s",(ip_addr,))
 	result=cur.fetchall()
 	if result==[] or result[0][1]-int(time())<=43200:
-		newname=request.form['newname']
-		newhandle=request.form['newhandle']
-		inewpass=request.form['newpass']
-		rinewpass=request.form['retypenewpass']
+		newname=request.form.get('newname')
+		newhandle=request.form.get('newhandle')
+		inewpass=request.form.get('newpass')
+		rinewpass=request.form.get('retypenewpass')
+		if newname==None or newhandle==None or inewpass==None or rinewpass==None:
+			flash("項目を入力してください","alert alert-danger")
+			cur.close()
+			return redirect(url_for('signup'))
 		if inewpass==rinewpass:
 			newpass=generate_password_hash(inewpass).decode('utf-8')
 		else:
 			cur.close()
 			flash("パスワードが一致しません","alert alert-danger")
 			return redirect(url_for('signup'))
-		color=request.form['color']
+		color=request.form.get('color')
+		if color==None:
+			flash("項目を入力してください","alert alert-danger")
+			cur.close()
+			return redirect(url_for('signup'))
 		cur.execute("select * from sp_user where name=%s",(newname,))
 		nbol=cur.fetchall()
 		cur.execute("select * from sp_user where handle=%s",(newhandle,))
@@ -162,9 +173,7 @@ def do_signup():
 		elif len(newpass)<8:
 			error="もっと長いパスワードを入力してください"
 		if error=="":
-			cur.execute("select * from sp_user;")
-			id_in=len(cur.fetchall())+1
-			cur.execute("insert into sp_user values (%s,%s,%s,%s,%s,%s)",(id_in,newname,newhandle,newpass,color,"tmp"))
+			cur.execute("insert into sp_user(name,handle,password,color,type) values (%s,%s,%s,%s,%s)",(newname,newhandle,newpass,color,"tmp"))
 			if 'X-Forwarded-For' in request.headers:
 				ip=request.headers.getlist("X-Forwarded-For")[0]
 			else:
@@ -196,13 +205,11 @@ def do_upload(id):
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_file")
-	result=cur.fetchall()
-	cur.execute("select * from sp_file where tfilename=%s",(fileName,))
 	re18=cur.fetchall()
 	if not re18==[]:
 		fileName=fileName+'.1'
 	saveFileName=token_hex(16)+".png"
-	cur.execute("insert into sp_file values (%s,%s,%s,%s,%s)",(len(result),saveFileName,fileName,time(),id,))
+	cur.execute("insert into sp_file(sfilename,tfilename,time,user_id) values (%s,%s,%s,%s)",(saveFileName,fileName,time(),id,))
 	db.commit()
 	file.save(os.path.join(UPLOAD_DIR, saveFileName))
 	os.chmod(os.path.join(UPLOAD_DIR,saveFileName),0o644)
@@ -230,10 +237,15 @@ def show_new_thread():
 	return render_template('new_threads.html',title="スレッドを作成",tname="")
 
 def do_new_thread(id):
+	tname=request.form.get('newtname')
+	tdesc=request.form.get('newtdesc')
+	if tname==None:
+		flash("項目を入力してください","alert alert-danger")
+		return redirect(url_for('create_thread'))
+	elif tdesc==None:
+		tdesc="No Descliption."
 	db=db_util.get_db()
 	cur=db.cursor()
-	tname=request.form['newtname']
-	tdesc=request.form['newtdesc']
 	if tname:
 		cur.execute('select * from sp_board_thread where name=%s',(tname,))
 		result=cur.fetchall()
@@ -244,9 +256,7 @@ def do_new_thread(id):
 		elif tdesc=="":
 			tdesc="No Description."
 		if result==[]:
-			cur.execute("select * from sp_board_thread")
-			result=cur.fetchall()
-			cur.execute("insert into sp_board_thread values (%s,%s,%s,%s)",(len(result),tname,tdesc,id,))
+			cur.execute("insert into sp_board_thread(name,des,auther_id) values (%s,%s,%s)",(tname,tdesc,id,))
 			db.commit()
 			cur.close()
 			flash("スレッドは正常に作成されました","alert alert-success")
@@ -262,7 +272,7 @@ def show_board(id,thread):
 		cur.close()
 		return redirect(url_for("threads"))
 	else:
-		cur.execute("select * from sp_board_post where th_id=%s",(result[0][0],))
+		cur.execute("select * from sp_board_post where th_id=%s order by id desc",(result[0][0],))
 		result=cur.fetchall()
 		posts=[]
 		for i in range(len(result)):
@@ -274,49 +284,51 @@ def show_board(id,thread):
 def do_post_to_board(id,thread):
 	db=db_util.get_db()
 	cur=db.cursor()
-	ptitle=request.form['ptitle']
-	pmess=request.form['pmess']
+	ptitle=request.form.get('ptitle')
+	if ptitle==None:
+		flash("タイトルが必要です","alert alert-danger")
+		cur.close()
+		return redirect(url_for("board_render"))
+	pmess=request.form.get('pmess')
+	if pmess==None:
+		flash("コメントが必要です","alert alert-danger")
+		cur.close()
+		return redirect(url_for("board_render"))
 	if 'X-Forwarded-For' in request.headers:
 		pip=request.headers.getlist("X-Forwarded-For")[0]
 	else:
 		pip=request.remote_addr
-	if ptitle=="" or pmess=="":
-		flash("タイトルが必要です","alert alert-danger")
-		cur.close()
-		return redirect(url_for("board_render"))
-	else:
-		pmess=html.escape(pmess)
-		d=patt1.findall(pmess)
-		for i in d:
-			pmess=re.sub(re.sub('\)','\)',re.sub('\(','\(',i[0])),linktag.format(url=html.escape(i[1])),pmess)
-		pmess=re.sub('\n','<br>',pmess)
-		cur.execute("select * from sp_board_thread where name=%s",(thread,))
-		r1=cur.fetchall()
-		cur.execute("select * from sp_board_post")
-		result=cur.fetchall()
-		cur.execute("insert into sp_board_post values (%s,%s,%s,%s,%s,%s,%s)",(len(result)+1,time(),ptitle,pmess,r1[0][0],pip,id,))
-		db.commit()
-		cur.close()
-		return redirect("/sp-service/thread/"+thread)
+
+	pmess=html.escape(pmess)
+	d=patt1.findall(pmess)
+	for i in d:
+		pmess=re.sub(re.sub('\)','\)',re.sub('\(','\(',i[0])),linktag.format(url=html.escape(i[1])),pmess)
+	pmess=re.sub('\n','<br>',pmess)
+	cur.execute("select * from sp_board_thread where name=%s",(thread,))
+	r1=cur.fetchall()
+	cur.execute("insert into sp_board_post(time,title,mess,th_id,ip,wr_id) values (%s,%s,%s,%s,%s,%s)",(time(),ptitle,pmess,r1[0][0],pip,id,))
+	db.commit()
+	cur.close()
+	return redirect("/sp-service/thread/"+thread)
 
 
 def show_contact_form():
 	return render_template('contact_form.html',title="Contact")
 
 def do_contact_form(user_id):
-	contact=request.form['contact']
-	if not contact:
+	contact=request.form.get('contact')
+	if contact==None:
 		flash("何か入力してください","alert alert-danger")
 		return redirect(url_for("contact"))
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_contact;")
 	result=cur.fetchall()
-	cur.execute("insert into sp_contact values(%s,%s,%s);",(str(len(result)+1),contact,user_id,))
+	cur.execute("insert into sp_contact(content,user_id) values(%s,%s);",(contact,user_id,))
 	db.commit()
 	cur.close()
-	return render_template("complite.html",title="リクエストは正常に送信されました")
-
+	flash("リクエストは正常に送信されました","alert alert-danger")
+	return redirect(url_for('contact'))
 
 def show_chat(id):
 	db=db_util.get_db()
@@ -340,10 +352,15 @@ def show_new_room():
 	return render_template('new-room.html',title="ルームを作成",tname="")
 
 def do_new_room(id):
+	rname=request.form.get('newtname')
+	rdesc=request.form.get('newtdesc')
+	if rname==None:
+		flash("項目をきちんと入力してください","alert alert-danger")
+		return redirect(url_for('create_room'))
+	elif rdesc==None:
+		rdesc="No Description"
 	db=db_util.get_db()
 	cur=db.cursor()
-	rname=request.form['newtname']
-	rdesc=request.form['newtdesc']
 	if rname:
 		cur.execute('select * from sp_chat_room where name=%s',(rname,))
 		result=cur.fetchall()
@@ -351,15 +368,13 @@ def do_new_room(id):
 			flash("そのルームの名前は既に使われています","alert alert-danger")
 			cur.close()
 			return redirect(url_for("create_room"))
-		elif rdesc=="":
-			rdesc="No Description."
 		if result==[]:
-			cur.execute("select * from sp_board_thread")
-			result=cur.fetchall()
-			cur.execute("insert into sp_chat_room values (%s,%s,%s,%s)",(len(result),rname,rdesc,id,))
+			cur.execute("insert into sp_chat_room(name,des,auther_id) values (%s,%s,%s)",(rname,rdesc,id,))
 			db.commit()
+			cur.execute("select * from sp_chat_room where name=%s",(rname,))
+			re1=cur.fetchall()
 			cur.close()
-			with open("sp-service/static/chat/"+rname+'.txt','w') as f:
+			with open("sp-service/static/chat/"+re1[0][0]+'.txt','w') as f:
 				pass
 			flash("ルームは正常に作成されました","alert alert-success")
 			return redirect(url_for("rooms"))
@@ -385,9 +400,12 @@ def show_room(id,room):
 		return render_template('chat.html',title=room,mess=mess,user=user,path='/'+str(result[0][0]))
 
 def do_del_file():
+	file_id=request.form('delfile')
+	if file_id==None:
+		flash("ファイルを選択してください","alert alert-danger")
+		return redirect(url_for('mypage'))
 	db=db_util.get_db()
 	cur=db.cursor()
-	file_id=request.form['delfile']
 	cur.execute("select * from sp_file where id=%s",(file_id,))
 	result=cur.fetchall()
 	if not result==[]:
