@@ -25,14 +25,14 @@ def index():
 	else:
 		return routing.show_home()
 
-@application.route('/sp-service/sp-user/login', methods=['GET','POST'])
+@application.route('/sp-service/sp-user/login/', methods=['GET','POST'])
 def login():
 	if request.method=='POST':
 		return routing.do_login()
 	elif request.method=='GET':
 		return routing.show_login()
 
-@application.route('/sp-service/sp-user/logout', methods=['GET','POST'])
+@application.route('/sp-service/sp-user/logout/', methods=['GET','POST'])
 def logout():
 	result=routing.check_login()
 	if result[0]==False:
@@ -43,14 +43,14 @@ def logout():
 		elif request.method=='GET':
 			return routing.show_logout(result[1])
 
-@application.route('/sp-service/sp-user/signup',methods=['GET','POST'])
+@application.route('/sp-service/sp-user/signup/',methods=['GET','POST'])
 def signup():
 	if request.method=='POST':
 		return routing.do_signup()
 	elif request.method=='GET':
 		return routing.show_signup()
 
-@application.route('/sp-service/contact',methods=['GET','POST'])
+@application.route('/sp-service/contact/',methods=['GET','POST'])
 def contact():
 	result=routing.check_login()
 	if result[0]==False:
@@ -61,7 +61,7 @@ def contact():
 		elif request.method=='POST':
 			return routing.do_contact_form(result[1])
 
-@application.route('/sp-service/upload',methods=['GET','POST'])
+@application.route('/sp-service/upload/',methods=['GET','POST'])
 def upload():
 	result=routing.check_login()
 	if result[0]==False:
@@ -72,7 +72,7 @@ def upload():
 		elif request.method=='POST':
 			return routing.do_upload(result[1])
 
-@application.route('/sp-service/threads',methods=['GET'])
+@application.route('/sp-service/threads/',methods=['GET'])
 def threads():
 	result=routing.check_login()
 	if result[0]==False:
@@ -81,7 +81,7 @@ def threads():
 		if request.method=='GET':
 			return routing.show_threads()
 
-@application.route('/sp-service/threads/new',methods=['GET','POST'])
+@application.route('/sp-service/threads/new/',methods=['GET','POST'])
 def create_thread():
 	result=routing.check_login()
 	if result[0]==False:
@@ -92,7 +92,7 @@ def create_thread():
 		elif request.method=='POST':
 			return routing.do_new_thread(result[1])
 
-@application.route("/sp-service/thread/<string:thread>",methods=['GET','POST'])
+@application.route("/sp-service/thread/<string:thread>/",methods=['GET','POST'])
 def board_render(thread):
 	result=routing.check_login()
 	if result[0]==False:
@@ -103,7 +103,7 @@ def board_render(thread):
 		elif request.method=='POST':
 			return routing.do_post_to_board(result[1],thread)
 
-@application.route("/sp-service/sp-user/mypage",methods=['GET','POST'])
+@application.route("/sp-service/sp-user/mypage/",methods=['GET','POST'])
 def mypage():
 	result=routing.check_login()
 	if result[0]==False:
@@ -112,7 +112,7 @@ def mypage():
 		if request.method=='GET':
 			return routing.show_mypage(result[1])
 
-@application.route("/sp-service/chat",methods=['GET'])
+@application.route("/sp-service/chat/",methods=['GET'])
 def chat():
 	result=routing.check_login()
 	if result[0]==False:
@@ -121,7 +121,7 @@ def chat():
 		if request.method=='GET':
 			return routing.show_chat(result[1])
 
-@application.route('/sp-service/chat/rooms',methods=['GET'])
+@application.route('/sp-service/chat/rooms/',methods=['GET'])
 def rooms():
 	result=routing.check_login()
 	if result[0]==False:
@@ -130,7 +130,7 @@ def rooms():
 		if request.method=='GET':
 			return routing.show_rooms()
 
-@application.route('/sp-service/chat/rooms/new',methods=['GET','POST'])
+@application.route('/sp-service/chat/rooms/new/',methods=['GET','POST'])
 def create_room():
 	result=routing.check_login()
 	if result[0]==False:
@@ -141,7 +141,7 @@ def create_room():
 		elif request.method=='POST':
 			return routing.do_new_room(result[1])
 
-@application.route("/sp-service/chat/room/<string:room>",methods=['GET','POST'])
+@application.route("/sp-service/chat/room/<string:room>/",methods=['GET','POST'])
 def room_render(room):
 	result=routing.check_login()
 	if result[0]==False:
@@ -150,7 +150,7 @@ def room_render(room):
 		if request.method=='GET':
 			return routing.show_room(result[1],room)
 
-@application.route("/sp-service/sp-user/mypage/file-del",methods=['POST'])
+@application.route("/sp-service/sp-user/mypage/file-del/",methods=['POST'])
 def del_file():
 	result=routing.check_login()
 	if result[0]==False:
@@ -160,7 +160,7 @@ def del_file():
 			return routing.do_del_file()
 
 
-@application.route("/sp-service/ip",methods=['GET'])
+@application.route("/sp-service/ip/",methods=['GET'])
 def ip():
 	return routing.show_ip()
 
@@ -178,48 +178,65 @@ def download_upload_file(file):
 #=====================Admin Page ==============================#
 
 
-@application.route('/sp-service/sp-admin',methods=['GET'])
+@application.route('/sp-service/sp-admin/',methods=['GET'])
 def sp_admin():
-	if request.method=='GET':
-		return admin.show_admin()
+	result=routing.check_login()
+	if result[0]==False:
+		return redirect(url_for('login',next=result[1]))
+	elif result[1]==0:
+		if request.method=='GET':
+			return admin.show_admin()
 
-@application.route('/sp-service/sp-admin/user',methods=['GET'])
+@application.route('/sp-service/sp-admin/user/',methods=['GET'])
 def user_list():
-	if request.method=='GET':
-		return admin.show_user_list()
+	result=routing.check_login()
+	if result[0]==False:
+		return redirect(url_for('login',next=result[1]))
+	elif result[1]==0:
+		if request.method=='GET':
+			return admin.show_user_list()
 
-@application.route('/sp-service/sp-admin/user/upgrade',methods=['GET','POST'])
+@application.route('/sp-service/sp-admin/user/upgrade/',methods=['GET','POST'])
 def upgrade_user():
-	if request.method=='GET':
-		return admin.show_del_up_user('upgrade')
-	if request.method=='POST':
-		return admin.do_del_up_user('upgrade')
+	result=routing.check_login()
+	if result[0]==False:
+		return redirect(url_for('login',next=result[1]))
+	elif result[1]==0:
+		if request.method=='GET':
+			return admin.show_del_up_user('upgrade')
+		if request.method=='POST':
+			return admin.do_del_up_user('upgrade')
 
-@application.route('/sp-service/sp-admin/user/delete',methods=['GET','POST'])
+@application.route('/sp-service/sp-admin/user/delete/',methods=['GET','POST'])
 def delete_user():
-	if request.method=='GET':
-		return admin.show_del_up_user('delete')
-	if request.method=='POST':
-		return admin.do_del_up_user('delete')
+	result=routing.check_login()
+	if result[0]==False:
+		return redirect(url_for('login',next=result[1]))
+	elif result[1]==0:
+		if request.method=='GET':
+			return admin.show_del_up_user('delete')
+		if request.method=='POST':
+			return admin.do_del_up_user('delete')
 
-@application.route('/sp-service/sp-admin/user/edit',methods=['GET','POST'])
-def edit_user():
-	if request.method=='GET':
-		return admin.show_edit_user()
-	if request.method=='POST':
-		return admin.do_edit_user()
-
-@application.route('/sp-service/sp-admin/contact',methods=['GET'])
+@application.route('/sp-service/sp-admin/contact/',methods=['GET'])
 def list_contact():
-	if request.method=='GET':
-		return admin.show_contact()
+	result=routing.check_login()
+	if result[0]==False:
+		return redirect(url_for('login',next=result[1]))
+	elif result[1]==0:
+		if request.method=='GET':
+			return admin.show_contact()
 
-@application.route('/sp-service/sp-admin/contact/delete',methods=['GET','POST'])
+@application.route('/sp-service/sp-admin/contact/delete/',methods=['GET','POST'])
 def delete_contact():
-	if request.method=='GET':
-		return admin.show_delete_contact()
-	elif request.method=='POST':
-		return admin.do_delete_contact()
+	result=routing.check_login()
+	if result[0]==False:
+		return redirect(url_for('login',next=result[1]))
+	elif result[1]==0:
+		if request.method=='GET':
+			return admin.show_delete_contact()
+		elif request.method=='POST':
+			return admin.do_delete_contact()
 
 
 application.before_request(routing.before_request)

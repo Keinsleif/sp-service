@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1 class="text-center">Admin Page<h1>
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cate, mess in messages %}
+<div class="{{ cate }}">{{mess}}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<hr>
+<a class="btn btn-primary" href="/sp-service/sp-admin/user">User Configuration<span class="badge badge-danger">{{user_num}}</span></a><br>
+<a class="btn btn-primary" href="/sp-service/sp-admin/contact">Contact List<span class="badge badge-danger">{{con_num}}</span></a><br>
+{% endblock %}

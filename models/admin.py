@@ -8,21 +8,27 @@ from models import db_util
 
 
 def show_admin():
-	return render_template("admin.html")
+	db=db_util.get_db()
+	cur=db.cursor()
+	cur.execute("select id from sp_user")
+	u1=cur.fetchall()
+	cur.execute("select id from sp_contact")
+	c2=cur.fetchall()
+	return render_template("admin/admin.html",user_num=len(u1),con_num=len(c2))
 
 def show_user_list():
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_user;")
 	result=cur.fetchall()
-	return render_template('user_list.html',users=result)
+	return render_template('admin/user_list.html',users=result)
 
 def show_del_up_user(cont):
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_user;")
 	result=cur.fetchall()
-	return render_template(cont+'_user.html',users=result)
+	return render_template('admin/'+cont+'_user.html',users=result)
 
 def do_del_up_user(cont):
 	db=db_util.get_db()
@@ -45,31 +51,21 @@ def do_del_up_user(cont):
 		result=cur.fetchall()
 		cur.close()
 		flash("Not Selected Users!","alert alert-danger")
-		return render_template(cont+'_user.html',users=result)
-
-def show_edit_user(uname):
-	db=db_util.get_db()
-	cur=db.cursor()
-	return render_template('edit_user.html',user=uname)
-
-def do_edit_user():
-	db=db_util.get_db()
-	cur=db.cursor()
-
+		return redirect(url_for(cont+'_user'))
 
 def show_contact():
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_contact;")
 	result=cur.fetchall()
-	return render_template('contact_list.html',contents=result)
+	return render_template('admin/contact_list.html',contents=result)
 
 def show_delete_contact():
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_contact;")
 	result=cur.fetchall()
-	return render_template('delete_contact.html',contents=result)
+	return render_template('admin/delete_contact.html',contents=result)
 
 def do_delete_contact():
 	db=db_util.get_db()
@@ -89,4 +85,4 @@ def do_delete_contact():
 		result=cur.fetchall()
 		cur.close()
 		flash("Not Selected Contacts!","alert alert-danger")
-		return render_template('delete_contact.html',contents=result)
+		return redirect(url_for('delete_contact'))

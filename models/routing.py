@@ -25,7 +25,7 @@ def prepare_response(response):
 		response=make_response(response)
 	response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
 	response.headers['Content-Security-Policy'] = 'default-src \'self\' wss:;'
-	response.headers['Content-Security-Policy'] = 'script-src mypcnotes.mydns.jp googletagmanager.com \'nonce-ZWMyNjQ3YzMyNDI5ODI5MWQ0ODE1NjlkY2UxODAzODc2ZGUzYWQ2OA\''
+	response.headers['Content-Security-Policy'] = 'script-src mypcnotes.mydns.jp \'nonce-ZWMyNjQ3YzMyNDI5ODI5MWQ0ODE1NjlkY2UxODAzODc2ZGUzYWQ2OA\''
 	response.headers['X-Content-Type-Options'] = 'nosniff'
 	response.headers['X-Frame-Options'] = 'SAMEORIGIN'
 	response.headers['X-XSS-Protection'] = '1; mode=block'
@@ -68,7 +68,7 @@ def do_login():
 	user=request.form.get('userName')
 	passwd=request.form.get('password')
 	next_path=request.form.get('path')
-	if user==None or password==None or next_path==None:
+	if user==None or passwd==None or next_path==None:
 		flash("項目を入力してください","alert alert-danger")
 		cur.close()
 		return redirect(url_for('login'))
@@ -79,7 +79,7 @@ def do_login():
 	if result==[]:
 		cur.close()
 		flash("ユーザーネームが違います","alert alert-danger")
-		return  render_template('login.html',title="Login",)
+		return  redirect(url_for('login'))
 	elif check_password_hash(result[0][3],passwd):
 		cur.execute("delete from sp_session where user_id=%s;",(result[0][0],))
 		db.commit()
@@ -428,6 +428,7 @@ def show_ip():
 
 def download_file(file):
 	return send_from_directory(UPLOAD_DIR,file)
+
 
 def before_request():
 	logger=logging.create_logger(current_app)
