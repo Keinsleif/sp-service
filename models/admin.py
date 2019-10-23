@@ -14,30 +14,32 @@ def show_admin():
 	u1=cur.fetchall()
 	cur.execute("select id from sp_contact")
 	c2=cur.fetchall()
-	return render_template("admin/admin.html",user_num=len(u1),con_num=len(c2))
+	return render_template("admin/admin.html",user_num=len(u1),con_num=len(c2),title="Admin Page")
 
 def show_user_list():
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_user;")
 	result=cur.fetchall()
-	return render_template('admin/user_list.html',users=result)
+	return render_template('admin/user_list.html',users=result,title="User List")
 
 def show_del_up_user(cont):
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_user;")
 	result=cur.fetchall()
-	return render_template('admin/'+cont+'_user.html',users=result)
+	return render_template('admin/'+cont+'_user.html',users=result,title="Edit User")
 
 def do_del_up_user(cont):
 	db=db_util.get_db()
 	cur=db.cursor()
 	user_id=request.form.getlist(cont)
+	if cont=="upgrade":
+		gtype=request.form.get("type")
 	if not user_id==[]:
 		for i in user_id:
 			if cont=='upgrade':
-				cur.execute("update sp_user set type='normal' where id=%s",(i,))
+				cur.execute("update sp_user set type=%s where id=%s",(gtype,i,))
 			elif cont=='delete':
 				cur.execute("delete from sp_user where id=%s",(i,))
 		db.commit()
@@ -58,14 +60,14 @@ def show_contact():
 	cur=db.cursor()
 	cur.execute("select * from sp_contact;")
 	result=cur.fetchall()
-	return render_template('admin/contact_list.html',contents=result)
+	return render_template('admin/contact_list.html',contents=result,title="Contact List")
 
 def show_delete_contact():
 	db=db_util.get_db()
 	cur=db.cursor()
 	cur.execute("select * from sp_contact;")
 	result=cur.fetchall()
-	return render_template('admin/delete_contact.html',contents=result)
+	return render_template('admin/delete_contact.html',contents=result,title="Delete Contact")
 
 def do_delete_contact():
 	db=db_util.get_db()

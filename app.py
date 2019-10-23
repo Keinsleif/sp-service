@@ -186,6 +186,8 @@ def sp_admin():
 	elif result[1]==0:
 		if request.method=='GET':
 			return admin.show_admin()
+	else:
+		return redirect(url_for("index"))
 
 @application.route('/sp-service/sp-admin/user/',methods=['GET'])
 def user_list():
@@ -195,6 +197,8 @@ def user_list():
 	elif result[1]==0:
 		if request.method=='GET':
 			return admin.show_user_list()
+	else:
+		return redirect(url_for("index"))
 
 @application.route('/sp-service/sp-admin/user/upgrade/',methods=['GET','POST'])
 def upgrade_user():
@@ -206,6 +210,8 @@ def upgrade_user():
 			return admin.show_del_up_user('upgrade')
 		if request.method=='POST':
 			return admin.do_del_up_user('upgrade')
+	else:
+		return redirect(url_for("index"))
 
 @application.route('/sp-service/sp-admin/user/delete/',methods=['GET','POST'])
 def delete_user():
@@ -217,6 +223,8 @@ def delete_user():
 			return admin.show_del_up_user('delete')
 		if request.method=='POST':
 			return admin.do_del_up_user('delete')
+	else:
+		return redirect(url_for("index"))
 
 @application.route('/sp-service/sp-admin/contact/',methods=['GET'])
 def list_contact():
@@ -226,6 +234,8 @@ def list_contact():
 	elif result[1]==0:
 		if request.method=='GET':
 			return admin.show_contact()
+	else:
+		return redirect(url_for("index"))
 
 @application.route('/sp-service/sp-admin/contact/delete/',methods=['GET','POST'])
 def delete_contact():
@@ -237,6 +247,8 @@ def delete_contact():
 			return admin.show_delete_contact()
 		elif request.method=='POST':
 			return admin.do_delete_contact()
+	else:
+		return redirect(url_for("index"))
 
 
 application.before_request(routing.before_request)
