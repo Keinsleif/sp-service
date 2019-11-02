@@ -129,7 +129,7 @@ def do_signup():
 		ip_addr=request.remote_ip
 	cur.execute("select * from sp_ip where addr=%s",(ip_addr,))
 	result=cur.fetchall()
-	if result==[] or result[0][1]-int(time())<=43200:
+	if result==[]:
 		newname=request.form.get('newname')
 		newhandle=request.form.get('newhandle')
 		inewpass=request.form.get('newpass')
@@ -374,7 +374,7 @@ def do_new_room(id):
 			cur.execute("select * from sp_chat_room where name=%s",(rname,))
 			re1=cur.fetchall()
 			cur.close()
-			with open("sp-service/static/chat/"+re1[0][0]+'.txt','w') as f:
+			with open("sp-service/static/chat/"+str(re1[0][0])+'.txt','w') as f:
 				pass
 			flash("ルームは正常に作成されました","alert alert-success")
 			return redirect(url_for("rooms"))
@@ -400,7 +400,7 @@ def show_room(id,room):
 		return render_template('chat.html',title=room,mess=mess,user=user,path='/'+str(result[0][0]))
 
 def do_del_file():
-	file_id=request.form('delfile')
+	file_id=request.form.get('delfile')
 	if file_id==None:
 		flash("ファイルを選択してください","alert alert-danger")
 		return redirect(url_for('mypage'))
@@ -411,7 +411,8 @@ def do_del_file():
 	if not result==[]:
 		cur.execute("delete from sp_file where id=%s",(file_id,))
 		db.commit()
-		os.remove(UPLOAD_DIR+result[0][1])
+		if os.path.exists(UPLOAD_DIR+result[0][1]):
+			os.remove(UPLOAD_DIR+result[0][1])
 		flash("ファイルは正常に削除されました","alert alert-success")
 		cur.close()
 		return redirect(url_for('mypage'))
