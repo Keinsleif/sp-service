@@ -112,6 +112,15 @@ def mypage():
 		if request.method=='GET':
 			return routing.show_mypage(result[1])
 
+@application.route("/sp-service/sp-user/mypage/leave",methods=['POST'])
+def leave():
+	result=routing.check_login()
+	if result[0]==False:
+		return redirect(url_for('login',next=result[1]))
+	else:
+		if request.method=="POST":
+			return routing.leave_user(result[1])
+
 @application.route("/sp-service/chat/",methods=['GET'])
 def chat():
 	result=routing.check_login()

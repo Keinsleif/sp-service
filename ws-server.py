@@ -38,10 +38,11 @@ def chat_handle(environ, start_response, room):
 		for s in remove:
 			ws_list.remove(s)
 
-		with open("/var/www/html/sp-service/static/chat/"+room+".txt",'r+') as f:
-			d=f.read()
-			f.seek(0)
-			f.write('<div class="alert alert-'+msg["color"]+'">'+msg["writer"]+': '+msg["message"]+"</div>\n"+d)
+		if not msg["writer"]=="system":
+			with open("/var/www/html/sp-service/static/chat/"+room+".txt",'r+') as f:
+				d=f.read()
+				f.seek(0)
+				f.write('<div class="alert alert-'+msg["color"]+'">'+msg["writer"]+': '+msg["message"]+"</div>\n"+d)
 
 
 	print('exit:', environ['REMOTE_ADDR'], environ['REMOTE_PORT'])

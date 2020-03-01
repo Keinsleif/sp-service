@@ -52,8 +52,12 @@ def check_login():
 	elif result[0][2]==None:
 		cur.close()
 		return 0
+	cur.execute("select * from sp_user where id=%s;",(result[0][2],))
+	ud=cur.fetchall()
+	cur.close()
+	if ud[0][5]=="lock" or ud[0][5]=="delete":
+		return [False,request.path]
 	else:
-		cur.close()
 		return [True,result[0][2]]
 
 
@@ -224,6 +228,17 @@ def show_mypage(id):
 	cur.execute("select * from sp_file where user_id=%s",(id,))
 	files=cur.fetchall()
 	return render_template('mypage.html',title="Myページ",data=udata[0],files=files,datetime=datetime,UPLOAD_DIR=UPLOAD_DIR)
+
+def leave_user(id):
+	tof1=request.form.get('tof')
+	if tof1==None:
+		return redirect(url_for('mypage'))
+	db=db_util.get_db()
+	cur=db.cursor()
+	cur.execute("update sp_user set type='delete' where id=%s",(id,))
+	db.commit()
+	cur.close()
+	return redirect(url_for('login'))
 
 def show_threads():
 	db=db_util.get_db()
