@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>{{ title }}</title>
+
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://googletagmanager.com/gtag/js?id=UA-139113383-1" nonce="ZWMyNjQ3YzMyNDI5ODI5MWQ0ODE1NjlkY2UxODAzODc2ZGUzYWQ2OA">
-<script nonce="ZWMyNjQ3YzMyNDI5ODI5MWQ0ODE1NjlkY2UxODAzODc2ZGUzYWQ2OA">
+<script async src="https://googletagmanager.com/gtag/js?id=UA-139113383-1" nonce="vYVbljBJeUY/GB+OZXSmzCN6yKw">
+<script nonce="vYVbljBJeUY/GB+OZXSmzCN6yKw">
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
   gtag('config', 'UA-139113383-1');
 </script>
+
 <!-- BootstrapのCSS読み込み -->
 <link href="/sp-service/static/css/bootstrap.min.css" rel="stylesheet">
 <link href="/sp-service/static/css/style.css" rel="stylesheet">
 <!-- <link href="/sp-service/static/css/navbar-fixed-left.min.css" rel="stylesheet"> -->
-{{ head }}
+
+{{ head|safe }}
+
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-primary">
@@ -30,15 +36,15 @@
 <div class="sidebar-sticky max-hei">
 <ul class="nav">
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service">ホーム</a></li>
-<li class="nav-item"><a class="nav-link text-light" href="/sp-service/upload">Fileアップロード</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/threads">SP掲示板</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/chat">チャット</a></li>
-<li class="nav-item"><a class="nav-link text-light" href="/sp-service/chat/rooms">| ルーム</a></li>
-<li class="nav-item"><a class="nav-link text-light" href="/sp-service/contact">お問い合わせ</a></li>
+<li class="nav-item"><a class="nav-link text-light" href="/sp-service/chat/rooms">ルーム</a></li>
+<li class="nav-item"><a class="nav-link text-light" href="/sp-service/upload">Fileアップロード</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/sp-user/mypage">Myページ</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/sp-user/signup">新規登録</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/sp-user/login">ログイン</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/sp-user/logout">ログアウト</a></li>
+<li class="nav-item"><a class="nav-link text-light" href="/sp-service/contact">お問い合わせ</a></li>
 </ul>
 </div>
 </nav>
