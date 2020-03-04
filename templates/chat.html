@@ -2,6 +2,7 @@
 {% block content %}
 <div class="page-header">
 <h2>投稿</h2>
+<h3>別のページにいくときは離席ボタンを押してください</h3>
 </div>
 <form id="input-form" class="form-inline">
 <div class="form-group">
@@ -12,7 +13,7 @@
 <button id="re-btn" class="btn btn-primary" type="button" disabled="disabled">再開ボタン</button>
 </form>
 <div class="page-header">
-<h2>チャット</h2>
+<h2>チャット - {{title}}</h2>
 </div>
 <div id="chat-text">
 {{mess|safe}}

@@ -361,7 +361,12 @@ def show_rooms():
 	cur.execute("select * from sp_chat_room")
 	result=cur.fetchall()
 	cur.close()
-	return render_template('chat-room.html',title="ルームリスト",rooms=result)
+	l2=os.listdir("sp-service/static/chat/on/")
+	l3=[]
+	for i in l2:
+		with open("sp-service/static/chat/on/"+i,'r') as f:
+			l3.append(len(f.read().split()))
+	return render_template('chat-room.html',title="ルームリスト",rooms=result,popu=l3)
 
 def show_new_room():
 	return render_template('new-room.html',title="ルームを作成",tname="")
@@ -390,6 +395,8 @@ def do_new_room(id):
 			re1=cur.fetchall()
 			cur.close()
 			with open("sp-service/static/chat/"+str(re1[0][0])+'.txt','w') as f:
+				pass
+			with open("sp-service/static/chat/on/"+str(re1[0][0])+'.txt','w') as f:
 				pass
 			flash("ルームは正常に作成されました","alert alert-success")
 			return redirect(url_for("rooms"))

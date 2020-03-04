@@ -12,11 +12,11 @@
 <div class="table-responsive">
 <table class="table table-striped table-bordered">
 <thread>
-<tr><th>番号</th><th>ルーム名</th><th>説明</th><th>作ったユーザー</th><th>選択</th></tr>
+<tr><th>番号</th><th>ルーム名</th><th>説明</th><th>作ったユーザー</th><th>人数</th><th>選択</th></tr>
 </thread>
 <tbody>
 {% for room in rooms %}
-<tr><td>{{room[0]}}</td><td>{{room[1]}}</td><td>{{room[2]}}</td><td>{{room[3]}}</td><td><a class="btn btn-primary" href="/sp-service/chat/room/{{room[1]}}">入室</a></td></tr>
+<tr><td>{{room[0]}}</td><td>{{room[1]}}</td><td>{{room[2]}}</td><td>{{room[3]}}</td><td><span class="badge badge-danger">{{popu[room[0]]}}</span></td><td><a class="btn btn-primary" href="/sp-service/chat/room/{{room[1]}}">入室</a></td></tr>
 {% endfor %}
 </tbody>
 </table>

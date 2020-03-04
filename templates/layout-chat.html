@@ -29,15 +29,15 @@
 <div class="sidebar-sticky max-hei">
 <ul class="nav">
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service">ホーム</a></li>
-<li class="nav-item"><a class="nav-link text-light" href="/sp-service/upload">Fileアップロード</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/threads">掲示板</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/chat">チャット</a></li>
-<li class="nav-item"><a class="nav-link text-light" href="/sp-service/chat/rooms">| ルーム</a></li>
-<li class="nav-item"><a class="nav-link text-light" href="/sp-service/contact">お問い合わせ</a></li>
+<li class="nav-item"><a class="nav-link text-light" href="/sp-service/chat/rooms">ルーム</a></li>
+<li class="nav-item"><a class="nav-link text-light" href="/sp-service/upload">Fileアップロード</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/sp-user/mypage">Myページ</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/sp-user/signup">新規登録</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/sp-user/login">ログイン</a></li>
 <li class="nav-item"><a class="nav-link text-light" href="/sp-service/sp-user/logout">ログアウト</a></li>
+<li class="nav-item"><a class="nav-link text-light" href="/sp-service/contact">お問い合わせ</a></li>
 </ul>
 </div>
 </nav>
@@ -46,12 +46,6 @@
 {% endblock %}
 </div>
 </div>
-<!--<footer class="fixed-bottom bg-secondary">-->
-<!--<div class="container">-->
-<!--<div class="text-light">Powered by <a class="text-dark" href="https://www.python.org">Python</a> and <a class="text-dark" href="https://a2c.bitbucket.io/flask/">Flask</a></div>-->
-<!--<div class="text-light">Copyright (C) 2019-<span id="thisYear"></span> SP-Service Foundation</div>-->
-<!--</div>-->
-<!--</footer>-->
 <script src="/sp-service/static/js/jquery-3.4.1.min.js"></script>
 <script src="/sp-service/static/js/bootstrap.min.js"></script>
 <script src="/sp-service/static/js/script.js"></script>
@@ -62,9 +56,11 @@ var ws = new WebSocket(url);
 
 ws.onopen = function(){
 	var obj = new Object();
-	obj.message=escapeHtml('{{user[0][2]}}　が参加しました');
-	obj.writer='system';
-	obj.color='secondary';
+	obj.message = escapeHtml('{{user[0][2]}}　が参加しました');
+	obj.writer = 'system';
+	obj.user = '{{user[0][2]}}';
+	obj.color = 'secondary';
+	obj.type = 'start';
 	var jsonString = JSON.stringify(obj);
 	ws.send(jsonString);
 	$("#send-btn").prop("disabled", false);
@@ -90,21 +86,27 @@ $(window).on('unload', function() {
 
 $("#input-form").on("submit",function(event) {
 	event.preventDefault();
-	var obj = new Object();
-	obj.message=$("#input-text")[0].value;
-	obj.writer='{{user[0][2]}}';
-	obj.color='{{user[0][4]}}';
-	var jsonString = JSON.stringify(obj);
-	ws.send(jsonString);
-	$("#input-text")[0].value = "";
+	if($("#input-text")[0].value != ""){
+		var obj = new Object();
+		obj.message = $("#input-text")[0].value;
+		obj.writer = '{{user[0][2]}}';
+		obj.user = '{{user[0][2]}}';
+		obj.color = '{{user[0][4]}}';
+		obj.type = 'message'
+		var jsonString = JSON.stringify(obj);
+		ws.send(jsonString);
+		$("#input-text")[0].value = "";
+	}
 });
 
 $("#bay-btn").on("click",function(event) {
 	event.preventDefault();
 	var obj = new Object();
-	obj.message='{{user[0][2]}} が離席しました';
-	obj.writer='system';
-	obj.color='secondary';
+	obj.message = '{{user[0][2]}} が離席しました';
+	obj.writer = 'system';
+	obj.user = '{{user[0][2]}}';
+	obj.color = 'secondary';
+	obj.type = 'leave'
 	var jsonString = JSON.stringify(obj);
 	ws.send(jsonString);
 	$("#input-text")[0].value = "";
@@ -116,9 +118,11 @@ $("#bay-btn").on("click",function(event) {
 $("#re-btn").on("click",function(event) {
 	event.preventDefault();
 	var obj = new Object();
-	obj.message='{{user[0][2]}} が再開しました';
-	obj.writer='system';
-	obj.color='secondary';
+	obj.message = '{{user[0][2]}} が再開しました';
+	obj.writer = 'system';
+	obj.user = '{{user[0][2]}}';
+	obj.color = 'secondary';
+	obj.type = 're'
 	var jsonString = JSON.stringify(obj);
 	ws.send(jsonString);
 	$("#input-text")[0].value = "";
