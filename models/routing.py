@@ -208,11 +208,11 @@ def do_upload(id):
 		return redirect(url_for('upload'))
 	db=db_util.get_db()
 	cur=db.cursor()
-	cur.execute("select * from sp_file")
+	cur.execute("select * from sp_file where tfilename=%s",(fileName,))
 	re18=cur.fetchall()
 	if not re18==[]:
 		fileName=fileName+'.1'
-	saveFileName=token_hex(16)+".png"
+	saveFileName=token_hex(16)+"."+fileName.split(".")[-1]
 	cur.execute("insert into sp_file(sfilename,tfilename,time,user_id) values (%s,%s,%s,%s)",(saveFileName,fileName,time(),id,))
 	db.commit()
 	file.save(os.path.join(UPLOAD_DIR, saveFileName))
@@ -442,6 +442,14 @@ def do_del_file():
 	flash("選択されたファイルは存在しません","alert alert-danger")
 	return redirect(url_for('mypage'))
 
+def show_view(id):
+	db=db_util.get_db()
+	cur=db.cursor()
+	cur.execute("select * from sp_file where user_id=%s",(id,))
+	files=cur.fetchall()
+	return render_template('view.html',title="View",files=files,datetime=datetime,UPLOAD_DIR=UPLOAD_DIR)
+
+
 def show_ip():
 	if 'X-Forwarded-For' in request.headers:
 		ip=request.headers.getlist("X-Forwarded-For")[0]
@@ -451,7 +459,7 @@ def show_ip():
 
 
 def download_file(file):
-	return send_from_directory(UPLOAD_DIR,file)
+	return send_from_directory("/var/www/html/"+UPLOAD_DIR,file)
 
 
 def before_request():

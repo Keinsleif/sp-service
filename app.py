@@ -168,6 +168,15 @@ def del_file():
 		if request.method=='POST':
 			return routing.do_del_file()
 
+@application.route("/sp-service/view/",methods=['GET'])
+def view():
+	result=routing.check_login()
+	if result[0]==False:
+		return redirect(url_for('login',next=result[1]))
+	else:
+		if request.method=='GET':
+			return routing.show_view(result[1])
+
 
 @application.route("/sp-service/ip/",methods=['GET'])
 def ip():

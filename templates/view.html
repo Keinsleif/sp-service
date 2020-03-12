@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>File View</h1>
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cate, mess in messages %}
+<div class="{{ cate }}">{{mess}}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<h2 id="file">アップロードされたファイル</h2>
+<table class="table table-striped table-bordered table-responsive">
+<thead class="thead-light">
+<tr><th>ID</th><th>ファイル名</th><th>時間</th><th>View</th><th>削除</th></tr>
+</thead>
+<form action="/sp-service/sp-user/mypage/file-del" method="post">
+{% for file in files %}
+<tr><td>{{file[0]}}</td><td>{{file[2]}}</td><td>{{datetime.datetime.fromtimestamp(file[3])}}</td><td><a class="btn btn-primary" href="/{{UPLOAD_DIR}}{{file[1]}}">View</a></td><td><button class="btn btn-primary" type="submit" name="delfile" value="{{file[0]}}">削除</a></td></tr>
+{% endfor %}
+</form>
+</table>
+{% endblock %}
