@@ -9,7 +9,7 @@ import yaml
 with open("sp-service/config/env.conf","r") as f:
         data=yaml.load(f)
 for i in data:
-        exec(i+"='"+data[i]+"'")
+        exec(i+"='"+str(data[i])+"'")
 
 def exception_handler(ex):
 	logger=logging.create_logger(current_app)

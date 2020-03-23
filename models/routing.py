@@ -16,8 +16,11 @@ import yaml
 with open("sp-service/config/env.conf","r") as f:
 	data=yaml.load(f)
 for i in data:
-	exec(i+"='"+data[i]+"'")
+	exec(i+"='"+str(data[i])+"'")
 patt1=re.compile('(@link:\\((.*?)\\):@)')
+if MAX_AGE:
+	MAX_AGE=int(MAX_AGE)
+
 
 def prepare_response(response):
 	di=dir(response)
@@ -92,7 +95,7 @@ def do_login():
 		db.commit()
 		cur.close()
 		response=make_response(redirect(next_path))
-		response.set_cookie('sp-session',value=sessid,secure=True,httponly=True)
+		response.set_cookie('sp-session',value=sessid,secure=True,httponly=True,max_age=MAX_AGE,expires=int(time())+MAX_AGE)
 		return response
 	else:
 		cur.close()
@@ -361,10 +364,10 @@ def show_rooms():
 	cur.execute("select * from sp_chat_room")
 	result=cur.fetchall()
 	cur.close()
-	l2=os.listdir("sp-service/static/chat/on/")
 	l3=[]
-	for i in l2:
-		with open("sp-service/static/chat/on/"+i,'r') as f:
+	l3.append(0)
+	for i in result:
+		with open("sp-service/static/chat/on/"+str(i[0])+".txt",'r') as f:
 			l3.append(len(f.read().split()))
 	return render_template('chat-room.html',title="ルームリスト",rooms=result,popu=l3)
 

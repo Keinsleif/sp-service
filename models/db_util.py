@@ -8,7 +8,7 @@ import yaml
 with open("sp-service/config/env.conf","r") as f:
 	data=yaml.load(f)
 for i in data:
-	exec(i+"='"+data[i]+"'")
+	exec(i+"='"+str(data[i])+"'")
 
 if MODE=="DEBUG":
 	DB_NAME="spservice_dev"
