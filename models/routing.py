@@ -85,7 +85,7 @@ def do_login():
 	result=cur.fetchall()
 	if result==[]:
 		cur.close()
-		flash("ユーザーネームが違います","alert alert-danger")
+		flash("ユーザーかパスワードが違います","alert alert-danger")
 		return  redirect(url_for('login'))
 	elif check_password_hash(result[0][3],passwd):
 		cur.execute("delete from sp_session where user_id=%s;",(result[0][0],))
@@ -99,7 +99,7 @@ def do_login():
 		return response
 	else:
 		cur.close()
-		flash("パスワードが違います","alert alert-danger")
+		flash("ユーザーかパスワードが違います","alert alert-danger")
 		return render_template('login.html',title="Login",)
 
 def show_logout(userid):

@@ -74,7 +74,7 @@ def chat_handle(environ, start_response, room):
 	ws_list[room].remove(ws)
 
 
-def myapp(environ, start_response):
+def application(environ, start_response):
 	path = environ['PATH_INFO']
 	print('start:'+path)
 	if path == '/chat':
@@ -89,6 +89,6 @@ def myapp(environ, start_response):
 
 
 if __name__ == '__main__':
-	server = pywsgi.WSGIServer(('127.0.0.1', 9250), myapp, handler_class=WebSocketHandler)
+	server = pywsgi.WSGIServer(('127.0.0.1', 9250), application, handler_class=WebSocketHandler)
 	print("Starting Gevent Websocket Server.")
 	server.serve_forever()
