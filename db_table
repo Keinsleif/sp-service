@@ -1,3 +1,5 @@
+use spservice;
+
 create table sp_user (id int(8) NOT NULL primary key auto_increment,name varchar(10) not null unique,handle varchar(10) not null unique,password char(60) not null unique,color varchar(10),type varchar(8) not null);
 create table sp_session(sess_id char(8) not null primary key,time int unsigned not null,user_id int not null unique,index sess_index(user_id), foreign key fk_user_id (user_id) references sp_user(id) on delete cascade on update cascade);
 create table sp_board_thread(id int(8) not null primary key auto_increment,name varchar(20) not null,des text,auther_id int(8) not null,index th_index(auther_id), foreign key (auther_id) references sp_user(id) on delete cascade on update cascade);

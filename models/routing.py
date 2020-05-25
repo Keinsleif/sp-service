@@ -1,4 +1,4 @@
-#!/var/www/venv/bin/python
+#!/var/www/pyenv/bin/python
 # -*- coding: utf-8 -*-
 
 from flask import request, current_app, logging, render_template, redirect, url_for, make_response, flash, send_from_directory
@@ -13,8 +13,8 @@ import os
 import html
 import yaml
 
-with open("sp-service/config/env.conf","r") as f:
-	data=yaml.load(f)
+with open("config/env.conf","r") as f:
+	data=yaml.safe_load(f)
 for i in data:
 	exec(i+"='"+str(data[i])+"'")
 patt1=re.compile('(@link:\\((.*?)\\):@)')
@@ -68,7 +68,7 @@ def show_home():
 	return render_template('home.html',title="メインページ")
 
 def show_login():
-	path=request.args.get('next','/sp-service')
+	path=request.args.get('next',HOME)
 	return render_template('login.html',title="ログイン",error="",reqpath=path)
 
 def do_login():
@@ -327,7 +327,7 @@ def do_post_to_board(id,thread):
 	cur.execute("insert into sp_board_post(time,title,mess,th_id,ip,wr_id) values (%s,%s,%s,%s,%s,%s)",(time(),ptitle,pmess,r1[0][0],pip,id,))
 	db.commit()
 	cur.close()
-	return redirect("/sp-service/thread/"+thread)
+	return redirect(HOME+"/thread/"+thread)
 
 
 def show_contact_form():
@@ -353,7 +353,7 @@ def show_chat(id):
 	cur=db.cursor()
 	cur.execute("select * from sp_user where id=%s",(id,))
 	result=cur.fetchall()
-	with open('sp-service/static/chat/chat.txt','r') as f:
+	with open('static/chat/chat.txt','r') as f:
 		mess=f.read()
 	cur.close()
 	return render_template('chat.html',title="チャット",user=result,mess=mess,path="")
@@ -367,7 +367,7 @@ def show_rooms():
 	l3=[]
 	l3.append(0)
 	for i in result:
-		with open("sp-service/static/chat/on/"+str(i[0])+".txt",'r') as f:
+		with open("static/chat/on/"+str(i[0])+".txt",'r') as f:
 			l3.append(len(f.read().split()))
 	return render_template('chat-room.html',title="ルームリスト",rooms=result,popu=l3)
 
@@ -397,9 +397,9 @@ def do_new_room(id):
 			cur.execute("select * from sp_chat_room where name=%s",(rname,))
 			re1=cur.fetchall()
 			cur.close()
-			with open("sp-service/static/chat/"+str(re1[0][0])+'.txt','w') as f:
+			with open("static/chat/"+str(re1[0][0])+'.txt','w') as f:
 				pass
-			with open("sp-service/static/chat/on/"+str(re1[0][0])+'.txt','w') as f:
+			with open("static/chat/on/"+str(re1[0][0])+'.txt','w') as f:
 				pass
 			flash("ルームは正常に作成されました","alert alert-success")
 			return redirect(url_for("rooms"))
@@ -415,10 +415,10 @@ def show_room(id,room):
 		return redirect(url_for("rooms"))
 	else:
 		try:
-			with open('sp-service/static/chat/'+str(result[0][0])+'.txt','r') as f:
+			with open('static/chat/'+str(result[0][0])+'.txt','r') as f:
 				mess=f.read()
 		except:
-			with open('sp-service/static/chat/'+str(result[0][0])+'.txt','w+') as f:
+			with open('static/chat/'+str(result[0][0])+'.txt','w+') as f:
 				mess=""
 		cur.execute("select * from sp_user where id=%s",(id,))
 		user=cur.fetchall()
@@ -458,11 +458,12 @@ def show_ip():
 		ip=request.headers.getlist("X-Forwarded-For")[0]
 	else:
 		ip="not"
+#	ip=ip+"¥n"+os.getcwd()
 	return ip
 
 
 def download_file(file):
-	return send_from_directory("/var/www/html/"+UPLOAD_DIR,file)
+	return send_from_directory(UPLOAD_DIR,file)
 
 
 def before_request():

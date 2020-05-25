@@ -5,8 +5,8 @@ import mysql.connector
 from flask import current_app, g
 import yaml
 
-with open("sp-service/config/env.conf","r") as f:
-	data=yaml.load(f)
+with open("config/env.conf","r") as f:
+	data=yaml.safe_load(f)
 for i in data:
 	exec(i+"='"+str(data[i])+"'")
 

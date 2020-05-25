@@ -6,8 +6,8 @@ import traceback
 from http import HTTPStatus
 import yaml
 
-with open("sp-service/config/env.conf","r") as f:
-        data=yaml.load(f)
+with open("config/env.conf","r") as f:
+        data=yaml.safe_load(f)
 for i in data:
         exec(i+"='"+str(data[i])+"'")
 
@@ -38,8 +38,8 @@ def init_app(app,log_dir='/var/log/sp-service'):
 	import logging
 	from logging.handlers import RotatingFileHandler
 	formatter=logging.Formatter(
-		'%(asctime)s %(levelname)s: %(message)s '
-		'[in %(pathname)s:%(lineno)d]\n'
+		'[%(asctime)s] requested %(url)s \n'
+		'%(levelname)s in %(module)s: %(message)s'
 	)
 	debug_log = '/var/log/sp-service/main.log'
 	debug_file_handler = RotatingFileHandler(

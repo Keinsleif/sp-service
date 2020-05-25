@@ -1,4 +1,4 @@
-#!/var/www/venv/bin/python3
+#!/var/www/pyenv/bin/python3
 # -*- encode: utf-8 -*-
 
 from geventwebsocket.handler import WebSocketHandler
